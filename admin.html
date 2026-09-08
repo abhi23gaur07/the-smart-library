@@ -223,67 +223,6 @@
 			line-height: 1.55;
 		}
 
-		/* Helper credentials box */
-		.cred-helper-box {
-			background: linear-gradient(135deg, rgba(2, 132, 199, 0.06), rgba(0, 229, 255, 0.12));
-			border: 1px dashed rgba(2, 132, 199, 0.4);
-			border-radius: 10px;
-			padding: 14px 16px;
-			margin-bottom: 22px;
-		}
-		.cred-helper-title {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			font: 600 11px 'DM Mono', monospace;
-			color: var(--azure);
-			text-transform: uppercase;
-			letter-spacing: 0.08em;
-			margin-bottom: 8px;
-		}
-		.cred-rows {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 10px;
-			margin-bottom: 10px;
-		}
-		.cred-item {
-			background: rgba(255, 255, 255, 0.85);
-			padding: 7px 10px;
-			border-radius: 6px;
-			border: 1px solid rgba(2, 132, 199, 0.15);
-		}
-		.cred-label {
-			display: block;
-			font: 500 9px 'DM Mono', monospace;
-			color: var(--ink-soft);
-			text-transform: uppercase;
-		}
-		.cred-val {
-			font: 700 13px 'DM Mono', monospace;
-			color: var(--ink);
-		}
-
-		.autofill-btn {
-			width: 100%;
-			background: var(--white);
-			border: 1px solid var(--azure);
-			color: var(--azure);
-			padding: 7px 12px;
-			font: 700 11px 'DM Mono', monospace;
-			border-radius: 6px;
-			cursor: pointer;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 6px;
-			transition: all 0.2s;
-		}
-		.autofill-btn:hover {
-			background: var(--azure);
-			color: var(--white);
-		}
-
 		.form-group {
 			display: grid;
 			gap: 6px;
@@ -701,35 +640,14 @@
 			<h1>Admin Central Portal</h1>
 			<p class="subtitle">Authenticate to manage members, active reservations, book catalog inventory, and newsletter subscribers.</p>
 
-			<!-- Helper Demo Credentials Box -->
-			<div class="cred-helper-box">
-				<div class="cred-helper-title">
-					<span>⚡ Temporary Credentials</span>
-					<span>Demo Access</span>
-				</div>
-				<div class="cred-rows">
-					<div class="cred-item">
-						<span class="cred-label">Username</span>
-						<span class="cred-val">admin</span>
-					</div>
-					<div class="cred-item">
-						<span class="cred-label">Password</span>
-						<span class="cred-val">admin123</span>
-					</div>
-				</div>
-				<button id="autofill-btn" type="button" class="autofill-btn">
-					<span>⚡ Click to Auto-fill Credentials</span>
-				</button>
-			</div>
-
 			<form id="admin-login-form">
 				<div class="form-group">
 					<label for="admin-user">Admin Username</label>
-					<input type="text" id="admin-user" required placeholder="Enter username (e.g. admin)" autocomplete="username">
+					<input type="text" id="admin-user" required placeholder="Enter admin username" autocomplete="username">
 				</div>
 				<div class="form-group">
 					<label for="admin-pass">Admin Password</label>
-					<input type="password" id="admin-pass" required placeholder="Enter password (e.g. admin123)" autocomplete="current-password">
+					<input type="password" id="admin-pass" required placeholder="Enter admin password" autocomplete="current-password">
 				</div>
 				<button type="submit" class="admin-login-submit">Authenticate to Admin Central →</button>
 				<div id="login-status-msg" class="admin-login-status"></div>
@@ -994,7 +912,6 @@
 		const userInp = document.getElementById('admin-user');
 		const passInp = document.getElementById('admin-pass');
 		const statusMsg = document.getElementById('login-status-msg');
-		const autofillBtn = document.getElementById('autofill-btn');
 		const logoutBtn = document.getElementById('header-logout-btn');
 		const refreshBtn = document.getElementById('refresh-dash-btn');
 
@@ -1022,14 +939,6 @@
 				return String(d);
 			}
 		}
-
-		// Autofill Demo credentials
-		autofillBtn.addEventListener('click', () => {
-			userInp.value = 'admin';
-			passInp.value = 'admin123';
-			statusMsg.textContent = 'Demo credentials filled. Click Authenticate!';
-			statusMsg.classList.add('success');
-		});
 
 		// Login Form Submission
 		loginForm.addEventListener('submit', async e => {
@@ -1469,3 +1378,4 @@
 	</script>
 </body>
 </html>
+

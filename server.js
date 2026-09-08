@@ -321,7 +321,7 @@ app.post('/api/admin/login', (req, res) => {
   }
 
   console.warn(`[ADMIN ACCESS ATTEMPT] Failed admin login attempt for username: "${username}"`);
-  return res.status(401).json({ success: false, error: 'Invalid admin credentials. Use demo: admin / admin123' });
+  return res.status(401).json({ success: false, error: 'Invalid admin credentials. Access denied.' });
 });
 
 // DELETE /api/admin/members/:id - Admin delete a registered member
