@@ -293,6 +293,73 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
+// ==========================================
+// ADMIN PORTAL API
+// ==========================================
+
+const ADMIN_USER = process.env.ADMIN_USER || 'admin';
+const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123';
+
+// POST /api/admin/login - Authenticate admin credentials
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ success: false, error: 'Username and password are required.' });
+  }
+
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    console.log(`[ADMIN ACCESS] Admin successfully logged in at ${new Date().toLocaleTimeString()}`);
+    return res.json({
+      success: true,
+      message: 'Admin authentication successful.',
+      admin: {
+        username: ADMIN_USER,
+        role: 'superadmin',
+        token: 'adm_session_' + Buffer.from(`${ADMIN_USER}:${Date.now()}`).toString('base64')
+      }
+    });
+  }
+
+  console.warn(`[ADMIN ACCESS ATTEMPT] Failed admin login attempt for username: "${username}"`);
+  return res.status(401).json({ success: false, error: 'Invalid admin credentials. Use demo: admin / admin123' });
+});
+
+// DELETE /api/admin/members/:id - Admin delete a registered member
+app.delete('/api/admin/members/:id', (req, res) => {
+  try {
+    const deleted = db.deleteMember(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, error: 'Member not found.' });
+    }
+    console.log(`[ADMIN ACTION] Deleted member: "${deleted.name}" <${deleted.email}> [ID: ${deleted.id}]`);
+    res.json({ success: true, message: `Member "${deleted.name}" removed from database.`, member: deleted });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// DELETE /api/admin/subscribers/:id - Admin remove a newsletter subscriber
+app.delete('/api/admin/subscribers/:id', (req, res) => {
+  try {
+    const deleted = db.deleteSubscriber(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, error: 'Subscriber not found.' });
+    }
+    console.log(`[ADMIN ACTION] Removed newsletter subscriber: <${deleted.email}> [ID: ${deleted.id}]`);
+    res.json({ success: true, message: `Subscriber <${deleted.email}> removed.`, subscriber: deleted });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Serve admin portal webpage
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
 // Root handler to always serve library.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'library.html'));

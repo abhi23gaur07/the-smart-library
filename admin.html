@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>THE SMART LIBRARY | Admin Security Portal & Database Control</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--ink: #152a35;
+			--ink-soft: #48616a;
+			--ink-dark: #0d1a21;
+			--paper: #f5f1e9;
+			--paper-deep: #e9e3d7;
+			--white: #ffffff;
+			--coral: #e56f50;
+			--coral-deep: #b84f37;
+			--azure: #0284c7;
+			--azure-glow: #00d2ff;
+			--sage: #8da58b;
+			--emerald: #10b981;
+			--line: rgba(21, 42, 53, 0.12);
+			--line-glow: rgba(0, 210, 255, 0.35);
+			--shadow: 0 18px 45px rgba(21, 42, 53, 0.10);
+			--shadow-lg: 0 25px 65px rgba(2, 132, 199, 0.18);
+		}
+
+		* { box-sizing: border-box; }
+		html, body { margin: 0; padding: 0; }
+		body {
+			min-height: 100vh;
+			background: var(--paper);
+			color: var(--ink);
+			font-family: 'Manrope', sans-serif;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		/* Custom cursor canvas */
+		#admin-cursor-canvas {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			z-index: 9999;
+		}
+
+		/* Top Navigation Header */
+		.admin-header {
+			position: sticky;
+			top: 0;
+			z-index: 40;
+			background: rgba(245, 241, 233, 0.94);
+			backdrop-filter: blur(14px);
+			border-bottom: 1px solid var(--line);
+		}
+		.admin-nav {
+			max-width: 1280px;
+			margin: 0 auto;
+			padding: 16px 24px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 20px;
+		}
+		.admin-brand {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			text-decoration: none;
+			color: var(--ink);
+			font-weight: 800;
+			letter-spacing: -0.02em;
+		}
+		.admin-brand-badge {
+			display: grid;
+			place-items: center;
+			width: 36px;
+			height: 36px;
+			background: var(--ink);
+			color: #00e5ff;
+			border-radius: 9px;
+			font: 700 16px 'Fraunces', serif;
+			box-shadow: 0 0 15px rgba(0, 229, 255, 0.35);
+		}
+		.admin-brand-text {
+			font-size: 15px;
+			font-weight: 800;
+			letter-spacing: -0.01em;
+		}
+		.admin-brand-text span {
+			color: var(--azure);
+			font-family: 'DM Mono', monospace;
+			font-size: 11px;
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+			margin-left: 6px;
+			background: rgba(2, 132, 199, 0.12);
+			padding: 2px 7px;
+			border-radius: 4px;
+		}
+
+		.admin-header-actions {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+		.status-chip {
+			display: inline-flex;
+			align-items: center;
+			gap: 7px;
+			font: 500 11px 'DM Mono', monospace;
+			color: var(--ink);
+			background: rgba(16, 185, 129, 0.12);
+			border: 1px solid rgba(16, 185, 129, 0.3);
+			padding: 6px 12px;
+			border-radius: 20px;
+		}
+		.status-dot {
+			width: 7px;
+			height: 7px;
+			border-radius: 50%;
+			background: var(--emerald);
+			box-shadow: 0 0 8px var(--emerald);
+			animation: pulse-dot 2s infinite;
+		}
+		@keyframes pulse-dot {
+			0%, 100% { opacity: 1; transform: scale(1); }
+			50% { opacity: 0.4; transform: scale(0.85); }
+		}
+
+		.header-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 7px;
+			padding: 8px 14px;
+			border: 1px solid var(--line);
+			background: var(--white);
+			color: var(--ink);
+			font-size: 12px;
+			font-weight: 700;
+			border-radius: 6px;
+			cursor: pointer;
+			text-decoration: none;
+			transition: all 0.2s;
+		}
+		.header-btn:hover {
+			border-color: var(--ink);
+			background: var(--ink);
+			color: var(--white);
+		}
+
+		/* ================================================= */
+		/* STATE 1: ADMIN LOGIN VIEW                         */
+		/* ================================================= */
+		.admin-login-wrap {
+			min-height: calc(100vh - 72px);
+			display: grid;
+			place-items: center;
+			padding: 40px 20px;
+			position: relative;
+			overflow: hidden;
+		}
+
+		/* Background decoration rings & ambient glow */
+		.admin-login-wrap::before {
+			content: '';
+			position: absolute;
+			width: 520px;
+			height: 520px;
+			border-radius: 50%;
+			background: radial-gradient(circle, rgba(2, 132, 199, 0.16) 0%, rgba(0, 210, 255, 0.08) 50%, transparent 70%);
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			filter: blur(40px);
+			pointer-events: none;
+		}
+
+		.admin-card {
+			width: 100%;
+			max-width: 460px;
+			background: rgba(255, 255, 255, 0.95);
+			backdrop-filter: blur(18px);
+			border: 1px solid rgba(2, 132, 199, 0.22);
+			border-radius: 16px;
+			padding: 38px 32px;
+			box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+			position: relative;
+			z-index: 2;
+			animation: fadeRise 0.5s ease-out;
+		}
+		@keyframes fadeRise {
+			from { opacity: 0; transform: translateY(20px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.admin-card-badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			font: 600 11px 'DM Mono', monospace;
+			color: #0284c7;
+			background: rgba(2, 132, 199, 0.10);
+			border: 1px solid rgba(2, 132, 199, 0.25);
+			padding: 5px 12px;
+			border-radius: 20px;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			margin-bottom: 16px;
+		}
+
+		.admin-card h1 {
+			margin: 0 0 8px;
+			font: 600 clamp(24px, 4vw, 30px)/1.15 'Fraunces', serif;
+			letter-spacing: -0.03em;
+			color: var(--ink);
+		}
+		.admin-card p.subtitle {
+			margin: 0 0 22px;
+			font-size: 13px;
+			color: var(--ink-soft);
+			line-height: 1.55;
+		}
+
+		/* Helper credentials box */
+		.cred-helper-box {
+			background: linear-gradient(135deg, rgba(2, 132, 199, 0.06), rgba(0, 229, 255, 0.12));
+			border: 1px dashed rgba(2, 132, 199, 0.4);
+			border-radius: 10px;
+			padding: 14px 16px;
+			margin-bottom: 22px;
+		}
+		.cred-helper-title {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			font: 600 11px 'DM Mono', monospace;
+			color: var(--azure);
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			margin-bottom: 8px;
+		}
+		.cred-rows {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+			margin-bottom: 10px;
+		}
+		.cred-item {
+			background: rgba(255, 255, 255, 0.85);
+			padding: 7px 10px;
+			border-radius: 6px;
+			border: 1px solid rgba(2, 132, 199, 0.15);
+		}
+		.cred-label {
+			display: block;
+			font: 500 9px 'DM Mono', monospace;
+			color: var(--ink-soft);
+			text-transform: uppercase;
+		}
+		.cred-val {
+			font: 700 13px 'DM Mono', monospace;
+			color: var(--ink);
+		}
+
+		.autofill-btn {
+			width: 100%;
+			background: var(--white);
+			border: 1px solid var(--azure);
+			color: var(--azure);
+			padding: 7px 12px;
+			font: 700 11px 'DM Mono', monospace;
+			border-radius: 6px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			transition: all 0.2s;
+		}
+		.autofill-btn:hover {
+			background: var(--azure);
+			color: var(--white);
+		}
+
+		.form-group {
+			display: grid;
+			gap: 6px;
+			margin-bottom: 18px;
+		}
+		.form-group label {
+			font: 600 11px 'DM Mono', monospace;
+			color: var(--ink-soft);
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+		}
+		.form-group input {
+			padding: 12px 14px;
+			border: 1px solid var(--line);
+			background: var(--paper);
+			border-radius: 8px;
+			font-size: 14px;
+			font-family: inherit;
+			color: var(--ink);
+			outline: none;
+			transition: border-color 0.2s, box-shadow 0.2s;
+		}
+		.form-group input:focus {
+			border-color: var(--azure);
+			box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+			background: var(--white);
+		}
+
+		.admin-login-submit {
+			width: 100%;
+			padding: 14px;
+			border: none;
+			border-radius: 8px;
+			background: linear-gradient(135deg, #152a35 0%, #0284c7 100%);
+			color: var(--white);
+			font-size: 14px;
+			font-weight: 800;
+			cursor: pointer;
+			box-shadow: 0 6px 20px rgba(2, 132, 199, 0.25);
+			transition: transform 0.15s, box-shadow 0.15s;
+		}
+		.admin-login-submit:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 8px 25px rgba(2, 132, 199, 0.35);
+		}
+
+		.admin-login-status {
+			min-height: 20px;
+			margin-top: 14px;
+			font-size: 12px;
+			font-family: 'DM Mono', monospace;
+			text-align: center;
+			color: var(--coral-deep);
+		}
+		.admin-login-status.success { color: var(--emerald); }
+
+		.admin-card-footer {
+			margin-top: 24px;
+			padding-top: 18px;
+			border-top: 1px solid var(--line);
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			font-size: 12px;
+			color: var(--ink-soft);
+		}
+		.admin-card-footer a {
+			color: var(--azure);
+			text-decoration: none;
+			font-weight: 700;
+		}
+		.admin-card-footer a:hover { text-decoration: underline; }
+
+		/* ================================================= */
+		/* STATE 2: ADMIN DASHBOARD (AFTER LOGIN)            */
+		/* ================================================= */
+		.admin-dashboard {
+			max-width: 1280px;
+			margin: 0 auto;
+			padding: 32px 24px 60px;
+			display: none;
+		}
+
+		.dash-welcome {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: flex-end;
+			justify-content: space-between;
+			gap: 20px;
+			margin-bottom: 28px;
+		}
+		.dash-welcome h1 {
+			margin: 0 0 6px;
+			font: 600 clamp(26px, 4vw, 36px)/1.1 'Fraunces', serif;
+			letter-spacing: -0.03em;
+		}
+		.dash-welcome p {
+			margin: 0;
+			color: var(--ink-soft);
+			font-size: 14px;
+		}
+
+		/* KPI Metric Cards */
+		.kpi-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+			gap: 18px;
+			margin-bottom: 32px;
+		}
+		.kpi-card {
+			background: var(--white);
+			border: 1px solid var(--line);
+			border-radius: 12px;
+			padding: 22px;
+			position: relative;
+			box-shadow: var(--shadow);
+			transition: transform 0.2s, border-color 0.2s;
+		}
+		.kpi-card:hover {
+			transform: translateY(-2px);
+			border-color: rgba(2, 132, 199, 0.4);
+		}
+		.kpi-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			color: var(--ink-soft);
+			font: 600 11px 'DM Mono', monospace;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			margin-bottom: 12px;
+		}
+		.kpi-icon {
+			width: 32px;
+			height: 32px;
+			display: grid;
+			place-items: center;
+			border-radius: 8px;
+			background: rgba(2, 132, 199, 0.08);
+			color: var(--azure);
+			font-size: 15px;
+		}
+		.kpi-value {
+			font: 700 36px/1 'Fraunces', serif;
+			color: var(--ink);
+			letter-spacing: -0.03em;
+		}
+		.kpi-note {
+			margin-top: 8px;
+			font-size: 11px;
+			color: var(--ink-soft);
+		}
+
+		/* Tab Controls */
+		.tabs-bar {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			border-bottom: 1px solid var(--line);
+			margin-bottom: 24px;
+			overflow-x: auto;
+			padding-bottom: 2px;
+		}
+		.tab-pill {
+			padding: 10px 18px;
+			border: 1px solid transparent;
+			background: transparent;
+			color: var(--ink-soft);
+			font-size: 13px;
+			font-weight: 700;
+			border-radius: 8px 8px 0 0;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			white-space: nowrap;
+			transition: all 0.2s;
+		}
+		.tab-pill:hover {
+			color: var(--ink);
+			background: rgba(21, 42, 53, 0.04);
+		}
+		.tab-pill.active {
+			color: var(--azure);
+			background: var(--white);
+			border-color: var(--line) var(--line) transparent var(--line);
+			box-shadow: 0 -3px 12px rgba(2, 132, 199, 0.06);
+		}
+		.tab-count {
+			font: 600 10px 'DM Mono', monospace;
+			background: rgba(2, 132, 199, 0.12);
+			color: var(--azure);
+			padding: 2px 6px;
+			border-radius: 10px;
+		}
+
+		/* Table View Container */
+		.view-pane { display: none; }
+		.view-pane.active { display: block; }
+
+		.table-toolbar {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: space-between;
+			gap: 16px;
+			margin-bottom: 16px;
+		}
+		.table-search {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			background: var(--white);
+			border: 1px solid var(--line);
+			border-radius: 8px;
+			padding: 8px 14px;
+			width: 100%;
+			max-width: 320px;
+		}
+		.table-search input {
+			border: none;
+			outline: none;
+			background: transparent;
+			font-size: 13px;
+			width: 100%;
+			font-family: inherit;
+		}
+
+		.action-btn {
+			padding: 9px 16px;
+			border: 1px solid var(--azure);
+			background: var(--azure);
+			color: var(--white);
+			font-size: 12px;
+			font-weight: 700;
+			border-radius: 6px;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			transition: all 0.2s;
+		}
+		.action-btn:hover {
+			background: #026ca3;
+			border-color: #026ca3;
+		}
+
+		.data-card {
+			background: var(--white);
+			border: 1px solid var(--line);
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: var(--shadow);
+		}
+		.table-wrap {
+			overflow-x: auto;
+		}
+		table.data-table {
+			width: 100%;
+			border-collapse: collapse;
+			text-align: left;
+			font-size: 13px;
+		}
+		table.data-table th {
+			background: #fbf9f5;
+			color: var(--ink-soft);
+			font: 600 10px 'DM Mono', monospace;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			padding: 14px 18px;
+			border-bottom: 1px solid var(--line);
+		}
+		table.data-table td {
+			padding: 14px 18px;
+			border-bottom: 1px solid rgba(21, 42, 53, 0.06);
+			color: var(--ink);
+			vertical-align: middle;
+		}
+		table.data-table tr:last-child td { border-bottom: none; }
+		table.data-table tr:hover td { background: rgba(2, 132, 199, 0.02); }
+
+		.badge {
+			display: inline-block;
+			padding: 3px 8px;
+			font: 600 10px 'DM Mono', monospace;
+			border-radius: 4px;
+			text-transform: uppercase;
+		}
+		.badge.member { background: rgba(2, 132, 199, 0.12); color: var(--azure); }
+		.badge.active { background: rgba(16, 185, 129, 0.12); color: var(--emerald); }
+		.badge.category { background: rgba(229, 111, 80, 0.12); color: var(--coral-deep); }
+
+		.btn-delete {
+			padding: 5px 10px;
+			border: 1px solid rgba(229, 111, 80, 0.3);
+			background: rgba(229, 111, 80, 0.08);
+			color: var(--coral-deep);
+			font: 700 11px 'DM Mono', monospace;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+		.btn-delete:hover {
+			background: var(--coral);
+			color: var(--white);
+			border-color: var(--coral);
+		}
+
+		.empty-table {
+			text-align: center;
+			padding: 40px 20px;
+			color: var(--ink-soft);
+			font-size: 13px;
+		}
+
+		/* Toast message */
+		.toast {
+			position: fixed;
+			bottom: 24px;
+			right: 24px;
+			background: var(--ink);
+			color: var(--white);
+			padding: 14px 20px;
+			border-radius: 8px;
+			font-size: 13px;
+			font-family: 'DM Mono', monospace;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+			transform: translateY(100px);
+			opacity: 0;
+			transition: all 0.3s;
+			z-index: 999;
+		}
+		.toast.show {
+			transform: translateY(0);
+			opacity: 1;
+		}
+
+		/* Modal Dialog for adding book */
+		dialog.admin-modal {
+			width: min(440px, calc(100% - 32px));
+			padding: 28px;
+			border: none;
+			border-radius: 12px;
+			background: var(--white);
+			box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+		}
+		dialog.admin-modal::backdrop {
+			background: rgba(21, 42, 53, 0.5);
+			backdrop-filter: blur(4px);
+		}
+		.modal-title-bar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 20px;
+		}
+		.modal-title-bar h2 {
+			margin: 0;
+			font: 600 24px 'Fraunces', serif;
+		}
+		.modal-close-btn {
+			border: none;
+			background: transparent;
+			font-size: 20px;
+			cursor: pointer;
+			color: var(--ink-soft);
+		}
+
+		/* Footer */
+		.admin-footer {
+			margin-top: 60px;
+			padding: 24px;
+			border-top: 1px solid var(--line);
+			text-align: center;
+			font-size: 12px;
+			color: var(--ink-soft);
+		}
+		.admin-footer strong { color: var(--azure); }
+	</style>
+</head>
+<body>
+	<canvas id="admin-cursor-canvas"></canvas>
+
+	<!-- Header Bar -->
+	<header class="admin-header">
+		<div class="admin-nav">
+			<a href="/" class="admin-brand">
+				<div class="admin-brand-badge">S</div>
+				<div class="admin-brand-text">
+					THE SMART LIBRARY <span>Admin</span>
+				</div>
+			</a>
+
+			<div class="admin-header-actions">
+				<div class="status-chip" title="SQLite Database with WAL concurrency enabled">
+					<span class="status-dot"></span>
+					<span>library.db: Active</span>
+				</div>
+				<a href="/" class="header-btn" title="Go to public library site">
+					<span>Public Library ↗</span>
+				</a>
+				<button id="header-logout-btn" class="header-btn" style="display: none;">
+					<span>Log Out</span>
+				</button>
+			</div>
+		</div>
+	</header>
+
+	<!-- ============================================== -->
+	<!-- VIEW 1: ADMIN LOGIN PORTAL                     -->
+	<!-- ============================================== -->
+	<section id="admin-login-view" class="admin-login-wrap">
+		<div class="admin-card">
+			<div class="admin-card-badge">🔒 Security Gateway</div>
+			<h1>Admin Central Portal</h1>
+			<p class="subtitle">Authenticate to manage members, active reservations, book catalog inventory, and newsletter subscribers.</p>
+
+			<!-- Helper Demo Credentials Box -->
+			<div class="cred-helper-box">
+				<div class="cred-helper-title">
+					<span>⚡ Temporary Credentials</span>
+					<span>Demo Access</span>
+				</div>
+				<div class="cred-rows">
+					<div class="cred-item">
+						<span class="cred-label">Username</span>
+						<span class="cred-val">admin</span>
+					</div>
+					<div class="cred-item">
+						<span class="cred-label">Password</span>
+						<span class="cred-val">admin123</span>
+					</div>
+				</div>
+				<button id="autofill-btn" type="button" class="autofill-btn">
+					<span>⚡ Click to Auto-fill Credentials</span>
+				</button>
+			</div>
+
+			<form id="admin-login-form">
+				<div class="form-group">
+					<label for="admin-user">Admin Username</label>
+					<input type="text" id="admin-user" required placeholder="Enter username (e.g. admin)" autocomplete="username">
+				</div>
+				<div class="form-group">
+					<label for="admin-pass">Admin Password</label>
+					<input type="password" id="admin-pass" required placeholder="Enter password (e.g. admin123)" autocomplete="current-password">
+				</div>
+				<button type="submit" class="admin-login-submit">Authenticate to Admin Central →</button>
+				<div id="login-status-msg" class="admin-login-status"></div>
+			</form>
+
+			<div class="admin-card-footer">
+				<a href="/">← Return to Public Library</a>
+				<span>Build by <strong>Team udsav</strong></span>
+			</div>
+		</div>
+	</section>
+
+	<!-- ============================================== -->
+	<!-- VIEW 2: FULL DATABASE CONTROL DASHBOARD        -->
+	<!-- ============================================== -->
+	<main id="admin-dashboard-view" class="admin-dashboard">
+		<div class="dash-welcome">
+			<div>
+				<h1>Database Management Central</h1>
+				<p>Real-time oversight and control over SQLite database (<code>library.db</code>).</p>
+			</div>
+			<div style="display: flex; gap: 10px;">
+				<button id="refresh-dash-btn" class="action-btn" style="background: var(--ink); border-color: var(--ink);">
+					<span>↻ Refresh All Data</span>
+				</button>
+			</div>
+		</div>
+
+		<!-- KPI Summary Cards -->
+		<div class="kpi-grid">
+			<div class="kpi-card">
+				<div class="kpi-header">
+					<span>Total Registered Members</span>
+					<div class="kpi-icon">👥</div>
+				</div>
+				<div class="kpi-value" id="kpi-members">-</div>
+				<div class="kpi-note">Stored with PBKDF2 hash</div>
+			</div>
+
+			<div class="kpi-card">
+				<div class="kpi-header">
+					<span>Active Reservations</span>
+					<div class="kpi-icon">📖</div>
+				</div>
+				<div class="kpi-value" id="kpi-reservations">-</div>
+				<div class="kpi-note">48-hour active hold queue</div>
+			</div>
+
+			<div class="kpi-card">
+				<div class="kpi-header">
+					<span>Catalog Inventory</span>
+					<div class="kpi-icon">📚</div>
+				</div>
+				<div class="kpi-value" id="kpi-books">-</div>
+				<div class="kpi-note">Publicly available books</div>
+			</div>
+
+			<div class="kpi-card">
+				<div class="kpi-header">
+					<span>Newsletter Subscribers</span>
+					<div class="kpi-icon">📬</div>
+				</div>
+				<div class="kpi-value" id="kpi-subscribers">-</div>
+				<div class="kpi-note">Reading list members</div>
+			</div>
+		</div>
+
+		<!-- Navigation Tabs -->
+		<div class="tabs-bar">
+			<button class="tab-pill active" data-target="pane-members">
+				<span>👥 Members</span>
+				<span class="tab-count" id="count-members">0</span>
+			</button>
+			<button class="tab-pill" data-target="pane-reservations">
+				<span>📖 Reservations</span>
+				<span class="tab-count" id="count-reservations">0</span>
+			</button>
+			<button class="tab-pill" data-target="pane-catalog">
+				<span>📚 Catalog</span>
+				<span class="tab-count" id="count-catalog">0</span>
+			</button>
+			<button class="tab-pill" data-target="pane-subscribers">
+				<span>📬 Subscribers</span>
+				<span class="tab-count" id="count-subscribers">0</span>
+			</button>
+		</div>
+
+		<!-- PANE 1: MEMBERS -->
+		<section id="pane-members" class="view-pane active">
+			<div class="table-toolbar">
+				<div class="table-search">
+					<span>🔍</span>
+					<input type="text" id="search-members" placeholder="Search members by name or email...">
+				</div>
+			</div>
+			<div class="data-card">
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Full Name</th>
+								<th>Email Address</th>
+								<th>Role</th>
+								<th>Registered Date</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody id="tbody-members">
+							<tr><td colspan="6" class="empty-table">Loading members...</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- PANE 2: RESERVATIONS -->
+		<section id="pane-reservations" class="view-pane">
+			<div class="table-toolbar">
+				<div class="table-search">
+					<span>🔍</span>
+					<input type="text" id="search-reservations" placeholder="Search by book or member...">
+				</div>
+			</div>
+			<div class="data-card">
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th>Hold ID</th>
+								<th>Book Title</th>
+								<th>Member Name</th>
+								<th>Member Email</th>
+								<th>Reserved At</th>
+								<th>Expires At</th>
+								<th>Status</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody id="tbody-reservations">
+							<tr><td colspan="8" class="empty-table">Loading reservations...</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- PANE 3: CATALOG INVENTORY -->
+		<section id="pane-catalog" class="view-pane">
+			<div class="table-toolbar">
+				<div class="table-search">
+					<span>🔍</span>
+					<input type="text" id="search-catalog" placeholder="Search catalog books...">
+				</div>
+				<button id="open-add-book-modal" class="action-btn">
+					<span>+ Add New Book to Catalog</span>
+				</button>
+			</div>
+			<div class="data-card">
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Title</th>
+								<th>Author</th>
+								<th>Category</th>
+								<th>Year</th>
+								<th>Tag</th>
+								<th>Status</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody id="tbody-catalog">
+							<tr><td colspan="8" class="empty-table">Loading books...</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- PANE 4: SUBSCRIBERS -->
+		<section id="pane-subscribers" class="view-pane">
+			<div class="table-toolbar">
+				<div class="table-search">
+					<span>🔍</span>
+					<input type="text" id="search-subscribers" placeholder="Search subscribers...">
+				</div>
+			</div>
+			<div class="data-card">
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th>Subscriber ID</th>
+								<th>Email Address</th>
+								<th>Subscribed Date</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody id="tbody-subscribers">
+							<tr><td colspan="4" class="empty-table">Loading subscribers...</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<footer class="admin-footer">
+			<p>THE SMART LIBRARY Central Management Portal · Build by <strong>Team udsav</strong></p>
+		</footer>
+	</main>
+
+	<!-- Quick Add Book Modal Dialog -->
+	<dialog id="admin-book-dialog" class="admin-modal">
+		<div class="modal-title-bar">
+			<h2>Add Book to Catalog</h2>
+			<button id="close-modal-btn" class="modal-close-btn">&times;</button>
+		</div>
+		<form id="admin-book-form">
+			<div class="form-group">
+				<label>Book Title</label>
+				<input type="text" id="book-title" required placeholder="e.g. Sapiens">
+			</div>
+			<div class="form-group">
+				<label>Author</label>
+				<input type="text" id="book-author" required placeholder="e.g. Yuval Noah Harari">
+			</div>
+			<div class="form-group">
+				<label>Category</label>
+				<input type="text" id="book-category" required placeholder="e.g. non-fiction, philosophy, art">
+			</div>
+			<div class="form-group">
+				<label>Publication Year</label>
+				<input type="text" id="book-year" required placeholder="e.g. 2024">
+			</div>
+			<div class="form-group">
+				<label>Tag</label>
+				<input type="text" id="book-tag" placeholder="e.g. Bestseller, Classic">
+			</div>
+			<button type="submit" class="action-btn" style="width: 100%; padding: 12px; justify-content: center; margin-top: 10px;">
+				Save to Database Catalog
+			</button>
+		</form>
+	</dialog>
+
+	<div id="admin-toast" class="toast"></div>
+
+	<script>
+		// ==========================================
+		// STATE & DOM REFS
+		// ==========================================
+		let currentAdmin = null;
+		let allMembers = [];
+		let allReservations = [];
+		let allBooks = [];
+		let allSubscribers = [];
+
+		const loginView = document.getElementById('admin-login-view');
+		const dashView = document.getElementById('admin-dashboard-view');
+		const loginForm = document.getElementById('admin-login-form');
+		const userInp = document.getElementById('admin-user');
+		const passInp = document.getElementById('admin-pass');
+		const statusMsg = document.getElementById('login-status-msg');
+		const autofillBtn = document.getElementById('autofill-btn');
+		const logoutBtn = document.getElementById('header-logout-btn');
+		const refreshBtn = document.getElementById('refresh-dash-btn');
+
+		// Toast helper
+		function showToast(msg) {
+			const t = document.getElementById('admin-toast');
+			t.textContent = msg;
+			t.classList.add('show');
+			setTimeout(() => t.classList.remove('show'), 3500);
+		}
+
+		// Escape helper
+		function esc(str) {
+			if (!str) return '';
+			return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+		}
+
+		// Format date helper
+		function formatDate(d) {
+			if (!d) return '-';
+			try {
+				const date = new Date(d);
+				return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+			} catch {
+				return String(d);
+			}
+		}
+
+		// Autofill Demo credentials
+		autofillBtn.addEventListener('click', () => {
+			userInp.value = 'admin';
+			passInp.value = 'admin123';
+			statusMsg.textContent = 'Demo credentials filled. Click Authenticate!';
+			statusMsg.classList.add('success');
+		});
+
+		// Login Form Submission
+		loginForm.addEventListener('submit', async e => {
+			e.preventDefault();
+			const username = userInp.value.trim();
+			const password = passInp.value;
+			statusMsg.textContent = 'Verifying security credentials...';
+			statusMsg.classList.remove('success');
+
+			try {
+				const res = await fetch('/api/admin/login', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ username, password })
+				});
+				const data = await res.json();
+				if (!res.ok) {
+					statusMsg.textContent = data.error || 'Authentication failed.';
+					return;
+				}
+
+				currentAdmin = data.admin;
+				sessionStorage.setItem('smart-library-admin', JSON.stringify(currentAdmin));
+				showToast('✓ Welcome back, Admin!');
+				enterDashboard();
+			} catch (err) {
+				statusMsg.textContent = 'Network error connecting to backend.';
+			}
+		});
+
+		// Enter Dashboard view
+		function enterDashboard() {
+			loginView.style.display = 'none';
+			dashView.style.display = 'block';
+			logoutBtn.style.display = 'inline-flex';
+			loadAllData();
+		}
+
+		// Logout handler
+		logoutBtn.addEventListener('click', () => {
+			currentAdmin = null;
+			sessionStorage.removeItem('smart-library-admin');
+			dashView.style.display = 'none';
+			loginView.style.display = 'grid';
+			logoutBtn.style.display = 'none';
+			userInp.value = '';
+			passInp.value = '';
+			statusMsg.textContent = 'Logged out successfully.';
+			statusMsg.classList.remove('success');
+		});
+
+		// Check saved admin session
+		const savedAdmin = sessionStorage.getItem('smart-library-admin');
+		if (savedAdmin) {
+			try {
+				currentAdmin = JSON.parse(savedAdmin);
+				enterDashboard();
+			} catch {
+				sessionStorage.removeItem('smart-library-admin');
+			}
+		}
+
+		// ==========================================
+		// DATA FETCHING & RENDERING
+		// ==========================================
+		async function loadAllData() {
+			await Promise.all([
+				fetchStats(),
+				fetchMembers(),
+				fetchReservations(),
+				fetchCatalog(),
+				fetchSubscribers()
+			]);
+		}
+
+		refreshBtn.addEventListener('click', async () => {
+			refreshBtn.textContent = '↻ Syncing...';
+			await loadAllData();
+			refreshBtn.textContent = '↻ Refresh All Data';
+			showToast('All database tables synchronized!');
+		});
+
+		// Fetch Stats
+		async function fetchStats() {
+			try {
+				const res = await fetch('/api/stats');
+				const data = await res.json();
+				if (data.success && data.stats) {
+					document.getElementById('kpi-members').textContent = data.stats.totalMembers;
+					document.getElementById('kpi-reservations').textContent = data.stats.activeReservations;
+					document.getElementById('kpi-books').textContent = data.stats.totalBooks;
+					document.getElementById('kpi-subscribers').textContent = data.stats.totalSubscribers;
+				}
+			} catch (err) {
+				console.error('Error fetching stats:', err);
+			}
+		}
+
+		// Fetch Members
+		async function fetchMembers() {
+			try {
+				const res = await fetch('/api/auth/members');
+				const data = await res.json();
+				allMembers = data.members || [];
+				document.getElementById('count-members').textContent = allMembers.length;
+				renderMembers(allMembers);
+			} catch (err) {
+				document.getElementById('tbody-members').innerHTML = '<tr><td colspan="6" class="empty-table">Error loading members.</td></tr>';
+			}
+		}
+
+		function renderMembers(list) {
+			const tbody = document.getElementById('tbody-members');
+			if (list.length === 0) {
+				tbody.innerHTML = '<tr><td colspan="6" class="empty-table">No members found in database.</td></tr>';
+				return;
+			}
+			tbody.innerHTML = list.map(m => `
+				<tr id="row-member-${m.id}">
+					<td><strong>#${m.id}</strong></td>
+					<td><strong>${esc(m.name)}</strong></td>
+					<td><code>${esc(m.email)}</code></td>
+					<td><span class="badge member">${esc(m.role || 'member')}</span></td>
+					<td>${formatDate(m.created_at)}</td>
+					<td>
+						<button class="btn-delete" onclick="deleteMemberItem(${m.id}, '${esc(m.name)}')">Delete</button>
+					</td>
+				</tr>
+			`).join('');
+		}
+
+		window.deleteMemberItem = async function(id, name) {
+			if (!confirm(`Are you sure you want to delete member "${name}" (ID: ${id}) from the database?`)) return;
+			try {
+				const res = await fetch(`/api/admin/members/${id}`, { method: 'DELETE' });
+				if (res.ok) {
+					showToast(`Deleted member "${name}"`);
+					document.getElementById(`row-member-${id}`)?.remove();
+					fetchStats();
+				} else {
+					showToast('Failed to delete member.');
+				}
+			} catch {
+				showToast('Network error.');
+			}
+		};
+
+		// Fetch Reservations
+		async function fetchReservations() {
+			try {
+				const res = await fetch('/api/reservations');
+				const data = await res.json();
+				allReservations = data.reservations || [];
+				document.getElementById('count-reservations').textContent = allReservations.length;
+				renderReservations(allReservations);
+			} catch (err) {
+				document.getElementById('tbody-reservations').innerHTML = '<tr><td colspan="8" class="empty-table">Error loading reservations.</td></tr>';
+			}
+		}
+
+		function renderReservations(list) {
+			const tbody = document.getElementById('tbody-reservations');
+			if (list.length === 0) {
+				tbody.innerHTML = '<tr><td colspan="8" class="empty-table">No active reservations at this time.</td></tr>';
+				return;
+			}
+			tbody.innerHTML = list.map(r => `
+				<tr id="row-res-${r.id}">
+					<td><strong>#${r.id}</strong></td>
+					<td><strong>${esc(r.book_title)}</strong></td>
+					<td>${esc(r.member_name)}</td>
+					<td><code>${esc(r.member_email)}</code></td>
+					<td>${formatDate(r.reserved_at)}</td>
+					<td><strong style="color: var(--azure);">${formatDate(r.expires_at)}</strong></td>
+					<td><span class="badge active">${esc(r.status || 'active')}</span></td>
+					<td>
+						<button class="btn-delete" onclick="cancelReservationItem(${r.id})">Cancel Hold</button>
+					</td>
+				</tr>
+			`).join('');
+		}
+
+		window.cancelReservationItem = async function(id) {
+			if (!confirm(`Cancel book reservation hold #${id}?`)) return;
+			try {
+				const res = await fetch(`/api/reservations/${id}`, { method: 'DELETE' });
+				if (res.ok) {
+					showToast(`Hold #${id} cancelled.`);
+					document.getElementById(`row-res-${id}`)?.remove();
+					fetchStats();
+				}
+			} catch {
+				showToast('Error cancelling hold.');
+			}
+		};
+
+		// Fetch Catalog
+		async function fetchCatalog() {
+			try {
+				const res = await fetch('/api/books');
+				const data = await res.json();
+				allBooks = data.books || [];
+				document.getElementById('count-catalog').textContent = allBooks.length;
+				renderCatalog(allBooks);
+			} catch (err) {
+				document.getElementById('tbody-catalog').innerHTML = '<tr><td colspan="8" class="empty-table">Error loading catalog.</td></tr>';
+			}
+		}
+
+		function renderCatalog(list) {
+			const tbody = document.getElementById('tbody-catalog');
+			if (list.length === 0) {
+				tbody.innerHTML = '<tr><td colspan="8" class="empty-table">No books in catalog.</td></tr>';
+				return;
+			}
+			tbody.innerHTML = list.map(b => `
+				<tr id="row-book-${b.id}">
+					<td><strong>#${b.id}</strong></td>
+					<td><strong>${esc(b.title)}</strong></td>
+					<td>${esc(b.author)}</td>
+					<td><span class="badge category">${esc(b.category)}</span></td>
+					<td>${esc(b.year)}</td>
+					<td><code>${esc(b.tag || '-')}</code></td>
+					<td><span class="badge active">${b.available ? 'Available' : 'Reserved'}</span></td>
+					<td>
+						<button class="btn-delete" onclick="deleteBookItem(${b.id}, '${esc(b.title)}')">Delete</button>
+					</td>
+				</tr>
+			`).join('');
+		}
+
+		window.deleteBookItem = async function(id, title) {
+			if (!confirm(`Remove "${title}" from the library catalog?`)) return;
+			try {
+				const res = await fetch(`/api/books/${id}`, { method: 'DELETE' });
+				if (res.ok) {
+					showToast(`Removed "${title}" from catalog.`);
+					document.getElementById(`row-book-${id}`)?.remove();
+					fetchStats();
+				}
+			} catch {
+				showToast('Error removing book.');
+			}
+		};
+
+		// Fetch Subscribers
+		async function fetchSubscribers() {
+			try {
+				const res = await fetch('/api/newsletter');
+				const data = await res.json();
+				allSubscribers = data.subscribers || [];
+				document.getElementById('count-subscribers').textContent = allSubscribers.length;
+				renderSubscribers(allSubscribers);
+			} catch (err) {
+				document.getElementById('tbody-subscribers').innerHTML = '<tr><td colspan="4" class="empty-table">Error loading subscribers.</td></tr>';
+			}
+		}
+
+		function renderSubscribers(list) {
+			const tbody = document.getElementById('tbody-subscribers');
+			if (list.length === 0) {
+				tbody.innerHTML = '<tr><td colspan="4" class="empty-table">No subscribers in reading list.</td></tr>';
+				return;
+			}
+			tbody.innerHTML = list.map(s => `
+				<tr id="row-sub-${s.id}">
+					<td><strong>#${s.id}</strong></td>
+					<td><code>${esc(s.email)}</code></td>
+					<td>${formatDate(s.subscribed_at)}</td>
+					<td>
+						<button class="btn-delete" onclick="deleteSubscriberItem(${s.id}, '${esc(s.email)}')">Remove</button>
+					</td>
+				</tr>
+			`).join('');
+		}
+
+		window.deleteSubscriberItem = async function(id, email) {
+			if (!confirm(`Remove ${email} from the newsletter list?`)) return;
+			try {
+				const res = await fetch(`/api/admin/subscribers/${id}`, { method: 'DELETE' });
+				if (res.ok) {
+					showToast(`Removed ${email}`);
+					document.getElementById(`row-sub-${id}`)?.remove();
+					fetchStats();
+				}
+			} catch {
+				showToast('Error removing subscriber.');
+			}
+		};
+
+		// ==========================================
+		// TAB SWITCHING & SEARCH FILTERS
+		// ==========================================
+		const tabPills = document.querySelectorAll('.tab-pill');
+		const viewPanes = document.querySelectorAll('.view-pane');
+
+		tabPills.forEach(pill => {
+			pill.addEventListener('click', () => {
+				tabPills.forEach(p => p.classList.remove('active'));
+				viewPanes.forEach(v => v.classList.remove('active'));
+				pill.classList.add('active');
+				const target = pill.dataset.target;
+				document.getElementById(target).classList.add('active');
+			});
+		});
+
+		// Live Search Filters
+		document.getElementById('search-members').addEventListener('input', e => {
+			const q = e.target.value.toLowerCase().trim();
+			const filtered = allMembers.filter(m => `${m.name} ${m.email}`.toLowerCase().includes(q));
+			renderMembers(filtered);
+		});
+
+		document.getElementById('search-reservations').addEventListener('input', e => {
+			const q = e.target.value.toLowerCase().trim();
+			const filtered = allReservations.filter(r => `${r.book_title} ${r.member_name} ${r.member_email}`.toLowerCase().includes(q));
+			renderReservations(filtered);
+		});
+
+		document.getElementById('search-catalog').addEventListener('input', e => {
+			const q = e.target.value.toLowerCase().trim();
+			const filtered = allBooks.filter(b => `${b.title} ${b.author} ${b.category}`.toLowerCase().includes(q));
+			renderCatalog(filtered);
+		});
+
+		document.getElementById('search-subscribers').addEventListener('input', e => {
+			const q = e.target.value.toLowerCase().trim();
+			const filtered = allSubscribers.filter(s => s.email.toLowerCase().includes(q));
+			renderSubscribers(filtered);
+		});
+
+		// Add Book Modal logic
+		const bookModal = document.getElementById('admin-book-dialog');
+		document.getElementById('open-add-book-modal').addEventListener('click', () => bookModal.showModal());
+		document.getElementById('close-modal-btn').addEventListener('click', () => bookModal.close());
+		bookModal.addEventListener('click', e => { if (e.target === bookModal) bookModal.close(); });
+
+		document.getElementById('admin-book-form').addEventListener('submit', async e => {
+			e.preventDefault();
+			const title = document.getElementById('book-title').value.trim();
+			const author = document.getElementById('book-author').value.trim();
+			const category = document.getElementById('book-category').value.trim();
+			const year = document.getElementById('book-year').value.trim();
+			const tag = document.getElementById('book-tag').value.trim() || 'New arrival';
+
+			try {
+				const res = await fetch('/api/books', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ title, author, category, year, tag })
+				});
+				const data = await res.json();
+				if (res.ok) {
+					bookModal.close();
+					document.getElementById('admin-book-form').reset();
+					showToast(`Added "${title}" to catalog!`);
+					await fetchCatalog();
+					await fetchStats();
+				} else {
+					showToast(data.error || 'Failed to add book.');
+				}
+			} catch {
+				showToast('Network error saving book.');
+			}
+		});
+
+		// ==========================================
+		// ELECTRIC BLUE CURSOR
+		// ==========================================
+		const cursorCanvas = document.getElementById('admin-cursor-canvas');
+		const cursorCtx = cursorCanvas.getContext('2d');
+		let cW = (cursorCanvas.width = window.innerWidth);
+		let cH = (cursorCanvas.height = window.innerHeight);
+
+		window.addEventListener('resize', () => {
+			cW = cursorCanvas.width = window.innerWidth;
+			cH = cursorCanvas.height = window.innerHeight;
+		});
+
+		const pointer = { x: cW / 2, y: cH / 2, targetX: cW / 2, targetY: cH / 2, isHover: false };
+		const trail = [];
+
+		window.addEventListener('mousemove', e => {
+			pointer.targetX = e.clientX;
+			pointer.targetY = e.clientY;
+		});
+
+		document.addEventListener('mouseover', e => {
+			if (e.target.closest('a, button, input, select, table tr')) pointer.isHover = true;
+		});
+		document.addEventListener('mouseout', e => {
+			if (e.target.closest('a, button, input, select, table tr')) pointer.isHover = false;
+		});
+
+		function renderCursor() {
+			cursorCtx.clearRect(0, 0, cW, cH);
+			pointer.x += (pointer.targetX - pointer.x) * 0.45;
+			pointer.y += (pointer.targetY - pointer.y) * 0.45;
+
+			trail.unshift({ x: pointer.x, y: pointer.y });
+			if (trail.length > 20) trail.pop();
+
+			if (trail.length > 2) {
+				cursorCtx.save();
+				cursorCtx.lineCap = 'round';
+				cursorCtx.lineJoin = 'round';
+				cursorCtx.shadowColor = '#00e5ff';
+				cursorCtx.shadowBlur = 12;
+
+				for (let i = 0; i < trail.length - 1; i++) {
+					const p1 = trail[i];
+					const p2 = trail[i + 1];
+					const prog = 1 - (i / trail.length);
+					cursorCtx.beginPath();
+					cursorCtx.moveTo(p1.x, p1.y);
+					cursorCtx.lineTo(p2.x, p2.y);
+					cursorCtx.strokeStyle = `rgba(0, 195, 255, ${prog * 0.7})`;
+					cursorCtx.lineWidth = Math.max(0.5, prog * (pointer.isHover ? 5 : 3.5));
+					cursorCtx.stroke();
+				}
+				cursorCtx.restore();
+			}
+
+			// Core glowing dot
+			cursorCtx.save();
+			cursorCtx.shadowColor = '#00d2ff';
+			cursorCtx.shadowBlur = pointer.isHover ? 16 : 8;
+			cursorCtx.beginPath();
+			cursorCtx.arc(pointer.x, pointer.y, pointer.isHover ? 7 : 4.5, 0, Math.PI * 2);
+			cursorCtx.fillStyle = '#00e5ff';
+			cursorCtx.fill();
+			cursorCtx.restore();
+
+			requestAnimationFrame(renderCursor);
+		}
+		requestAnimationFrame(renderCursor);
+	</script>
+</body>
+</html>

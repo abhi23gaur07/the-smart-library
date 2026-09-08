@@ -198,6 +198,13 @@ function getAllMembers() {
   return db.prepare('SELECT id, name, email, role, created_at FROM members ORDER BY id DESC').all();
 }
 
+function deleteMember(id) {
+  const member = db.prepare('SELECT id, name, email FROM members WHERE id = ?').get(id);
+  if (!member) return null;
+  db.prepare('DELETE FROM members WHERE id = ?').run(id);
+  return member;
+}
+
 // Reservations
 function createReservation({ book_id, member_name, member_email }) {
   const book = getBookById(book_id);
@@ -270,6 +277,13 @@ function getNewsletterSubscribers() {
   return db.prepare('SELECT * FROM newsletter_subscribers ORDER BY id DESC').all();
 }
 
+function deleteSubscriber(id) {
+  const subscriber = db.prepare('SELECT * FROM newsletter_subscribers WHERE id = ?').get(id);
+  if (!subscriber) return null;
+  db.prepare('DELETE FROM newsletter_subscribers WHERE id = ?').run(id);
+  return subscriber;
+}
+
 // Stats
 function getStats() {
   const totalBooks = db.prepare('SELECT COUNT(*) AS count FROM books').get().count;
@@ -298,11 +312,13 @@ module.exports = {
   findMemberByEmail,
   authenticateMember,
   getAllMembers,
+  deleteMember,
   createReservation,
   getReservations,
   cancelReservation,
   subscribeNewsletter,
   getNewsletterSubscribers,
+  deleteSubscriber,
   getStats
 };
 

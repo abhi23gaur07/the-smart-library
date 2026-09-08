@@ -537,6 +537,52 @@
 		.book-card:hover .cover {
 			box-shadow: 12px 18px 0 rgba(21,42,53,.08), 0 20px 35px rgba(0,180,255,.18);
 		}
+
+		/* Admin Portal Top Corner Buttons */
+		.top-corner-admin-btn {
+			position: absolute;
+			top: 24px;
+			right: 28px;
+			z-index: 25;
+			display: inline-flex;
+			align-items: center;
+			gap: 7px;
+			padding: 8px 16px;
+			background: rgba(255, 255, 255, 0.92);
+			backdrop-filter: blur(12px);
+			border: 1px solid rgba(2, 132, 199, 0.35);
+			border-radius: 20px;
+			color: #152a35;
+			font: 700 12px 'DM Mono', monospace;
+			text-decoration: none;
+			box-shadow: 0 4px 18px rgba(2, 132, 199, 0.15);
+			transition: all 0.25s ease;
+		}
+		.top-corner-admin-btn:hover {
+			background: #152a35;
+			color: #00e5ff;
+			border-color: #00e5ff;
+			transform: translateY(-2px);
+			box-shadow: 0 6px 22px rgba(0, 229, 255, 0.35);
+		}
+		.nav-admin-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 7px 14px;
+			background: rgba(2, 132, 199, 0.08);
+			border: 1px solid rgba(2, 132, 199, 0.28);
+			border-radius: 20px;
+			color: #0284c7;
+			font: 700 12px 'DM Mono', monospace;
+			text-decoration: none;
+			transition: all 0.2s ease;
+		}
+		.nav-admin-btn:hover {
+			background: #152a35;
+			color: #00e5ff;
+			border-color: #00e5ff;
+		}
 	</style>
 </head>
 	<body>
@@ -556,6 +602,8 @@
 				<div class="reader-credit-line">Build by Team udsav</div>
 			</div>
 			<div class="login-panel">
+				<!-- Top Right Corner Admin Access Button -->
+				<a href="/admin" class="top-corner-admin-btn" title="Open Admin Security Portal"><span>Admin Portal</span> 🔒</a>
 				<!-- Decorative background design behind portal registration -->
 				<div class="portal-bg-decor" aria-hidden="true">
 					<div class="decor-grid-pattern"></div>
@@ -587,7 +635,11 @@
 				<a href="#catalog">Browse</a><a href="#about">About us</a><a href="#visit">Visit</a>
 			</nav>
 			<div class="nav-actions">
+				<a href="/admin" class="nav-admin-btn" title="Open Admin Security Portal"><span>Admin Portal</span> 🔒</a>
 				<div id="nav-user-area" class="user-badge" hidden><span id="current-user-name">Member</span><button id="nav-logout-btn" class="logout-btn" type="button">Logout</button></div>
+				<button class="icon-btn" id="search-focus" aria-label="Focus catalog search">⌕</button>
+				<button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+			</div>
 				<button class="icon-btn" id="search-focus" aria-label="Focus catalog search">⌕</button>
 				<button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
 			</div>
