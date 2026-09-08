@@ -1,0 +1,21 @@
+{
+  "name": "the-smart-library",
+  "version": "1.0.0",
+  "description": "The Smart Library with Persistent SQLite Backend and Interactive Interface",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "keywords": [],
+  "author": "Team udsav",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

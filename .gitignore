@@ -1,0 +1,5 @@
+node_modules/
+*.log
+library.db-wal
+library.db-shm
+.DS_Store
