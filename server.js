@@ -495,7 +495,7 @@ setInterval(() => {
 // ==========================================
 
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
-const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123';
+const ADMIN_PASS = process.env.ADMIN_PASS || 'admin1234';
 
 // POST /api/admin/login - Authenticate admin credentials
 app.post('/api/admin/login', (req, res) => {
