@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ena Colliery 3D Mine Model Viewer (.GLB)</title>
+	<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+	<style>
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		body {
+			font-family: 'Segoe UI', system-ui, sans-serif;
+			background: #0f172a;
+			color: #f8fafc;
+			display: flex;
+			flex-direction: column;
+			height: 100vh;
+			overflow: hidden;
+		}
+		header {
+			padding: 16px 24px;
+			background: #1e293b;
+			border-bottom: 1px solid #334155;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		h1 { font-size: 18px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+		.btn-bar { display: flex; gap: 10px; }
+		button {
+			padding: 8px 16px;
+			background: #0284c7;
+			color: white;
+			border: none;
+			border-radius: 6px;
+			font-weight: 600;
+			cursor: pointer;
+			font-size: 13px;
+			transition: background 0.2s;
+		}
+		button:hover { background: #0369a1; }
+		button.active { background: #38bdf8; color: #0f172a; }
+		.viewer-container {
+			flex: 1;
+			position: relative;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		model-viewer {
+			width: 100%;
+			height: 100%;
+			background-color: #0b1120;
+		}
+		.info-badge {
+			position: absolute;
+			bottom: 20px;
+			left: 20px;
+			background: rgba(30, 41, 59, 0.85);
+			backdrop-filter: blur(8px);
+			border: 1px solid #334155;
+			padding: 12px 18px;
+			border-radius: 8px;
+			font-size: 12px;
+			line-height: 1.6;
+		}
+		.info-badge strong { color: #38bdf8; }
+	</style>
+</head>
+<body>
+	<header>
+		<h1><span>⛏️</span> Ena Colliery (OCP) 3D Model Viewer</h1>
+		<div class="btn-bar">
+			<button id="btn-textured" class="active" onclick="switchModel('Ena_Colliery_Textured.glb', this)">Textured (Satellite Imagery)</button>
+			<button id="btn-elevation" onclick="switchModel('Ena_Colliery.glb', this)">Terrain Elevation Mesh</button>
+		</div>
+	</header>
+	<div class="viewer-container">
+		<model-viewer 
+			id="mine-viewer" 
+			src="Ena_Colliery_Textured.glb" 
+			camera-controls 
+			auto-rotate 
+			rotation-per-second="15deg"
+			shadow-intensity="1.5" 
+			exposure="1.2"
+			environment-image="neutral"
+			interaction-prompt="auto">
+		</model-viewer>
+		<div class="info-badge">
+			<strong>Source:</strong> Satellite Imagery (Google Earth Airbus)<br>
+			<strong>Location:</strong> Ena Colliery (OCP) Coalfield, Jharia<br>
+			<strong>Controls:</strong> Left click + drag to rotate · Right click to pan · Scroll to zoom
+		</div>
+	</div>
+
+	<script>
+		function switchModel(src, btn) {
+			document.getElementById('mine-viewer').src = src;
+			document.querySelectorAll('header button').forEach(b => b.classList.remove('active'));
+			btn.classList.add('active');
+		}
+	</script>
+</body>
+</html>

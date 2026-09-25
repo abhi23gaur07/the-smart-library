@@ -601,6 +601,189 @@
 			color: var(--ink-soft);
 		}
 		.admin-footer strong { color: var(--azure); }
+
+		/* ==========================================
+		   ISSUE DESK & WHATSAPP SIMULATOR STYLES
+		   ========================================== */
+		.action-btn.whatsapp-btn {
+			background: #128c7e;
+			border-color: #128c7e;
+			color: #ffffff;
+		}
+		.action-btn.whatsapp-btn:hover {
+			background: #075e54;
+			border-color: #075e54;
+		}
+		.action-btn.scan-btn {
+			background: #0284c7;
+			border-color: #0284c7;
+			color: #ffffff;
+		}
+		.action-btn.sim-btn {
+			background: #d97706;
+			border-color: #d97706;
+			color: #ffffff;
+			font-size: 11px;
+			padding: 5px 9px;
+			border-radius: 4px;
+		}
+		.action-btn.sim-btn:hover {
+			background: #b45309;
+		}
+		.action-btn.return-btn {
+			background: #059669;
+			border-color: #059669;
+			color: #ffffff;
+			font-size: 11px;
+			padding: 5px 9px;
+			border-radius: 4px;
+		}
+		.action-btn.return-btn:hover {
+			background: #047857;
+		}
+		.badge.badge-day14 {
+			background: #fef3c7;
+			color: #b45309;
+			border: 1px solid #f59e0b;
+			font-weight: 700;
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+		}
+		.badge.badge-day14::before {
+			content: '';
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: #f59e0b;
+			box-shadow: 0 0 6px #f59e0b;
+			animation: pulse-dot 1.2s infinite ease-in-out;
+		}
+		@keyframes pulse-dot {
+			0%, 100% { transform: scale(1); opacity: 1; }
+			50% { transform: scale(1.5); opacity: 0.4; }
+		}
+		.badge.badge-duetoday {
+			background: #fee2e2;
+			color: #b91c1c;
+			border: 1px solid #ef4444;
+			font-weight: 700;
+		}
+		.badge.badge-overdue {
+			background: #fecaca;
+			color: #991b1b;
+			border: 1px solid #dc2626;
+			font-weight: 700;
+		}
+		.badge.badge-normal {
+			background: #e0f2fe;
+			color: #0369a1;
+			border: 1px solid #0284c7;
+		}
+		.badge.badge-returned {
+			background: #f3f4f6;
+			color: #4b5563;
+			border: 1px solid #9ca3af;
+		}
+
+		/* WhatsApp Phone Simulator Dialog */
+		dialog.whatsapp-phone-dialog {
+			width: min(440px, calc(100% - 24px));
+			padding: 0;
+			border: none;
+			border-radius: 28px;
+			background: #111b21;
+			box-shadow: 0 25px 85px rgba(0, 0, 0, 0.55);
+			overflow: hidden;
+		}
+		dialog.whatsapp-phone-dialog::backdrop {
+			background: rgba(15, 29, 36, 0.75);
+			backdrop-filter: blur(6px);
+		}
+		.phone-top-bar {
+			background: #202c33;
+			padding: 14px 18px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			color: #e9edef;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		}
+		.phone-contact-info {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+		.phone-avatar {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background: #00a884;
+			color: #ffffff;
+			display: grid;
+			place-items: center;
+			font-size: 18px;
+			font-weight: 700;
+		}
+		.phone-meta h4 {
+			margin: 0;
+			font-size: 14px;
+			color: #e9edef;
+		}
+		.phone-meta p {
+			margin: 0;
+			font-size: 11px;
+			color: #00a884;
+		}
+		.phone-body {
+			background: #0b141a;
+			background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+			background-size: 16px 16px;
+			padding: 22px 16px;
+			min-height: 380px;
+			max-height: 480px;
+			overflow-y: auto;
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end;
+		}
+		.chat-bubble {
+			background: #005c4b;
+			color: #e9edef;
+			border-radius: 8px 8px 2px 8px;
+			padding: 14px 16px;
+			max-width: 94%;
+			align-self: flex-end;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+			font-size: 13px;
+			line-height: 1.55;
+			white-space: pre-wrap;
+			word-break: break-word;
+			font-family: 'Manrope', -apple-system, sans-serif;
+			position: relative;
+		}
+		.chat-time-tick {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 4px;
+			font-size: 10px;
+			color: rgba(255, 255, 255, 0.65);
+			margin-top: 6px;
+			font-family: 'DM Mono', monospace;
+		}
+		.chat-time-tick .double-tick {
+			color: #53bdeb;
+			font-weight: bold;
+		}
+		.phone-bottom-bar {
+			background: #202c33;
+			padding: 14px 18px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+		}
 	</style>
 </head>
 <body>
@@ -678,6 +861,42 @@
 
 		<!-- KPI Summary Cards -->
 		<div class="kpi-grid">
+			<div class="kpi-card" style="border-top: 3px solid #128c7e;">
+				<div class="kpi-header">
+					<span>Active Book Loans (15d)</span>
+					<div class="kpi-icon">📋</div>
+				</div>
+				<div class="kpi-value" id="kpi-active-issues">-</div>
+				<div class="kpi-note">Borrowers in 15-day cycle</div>
+			</div>
+
+			<div class="kpi-card" style="border-top: 3px solid #d97706;">
+				<div class="kpi-header">
+					<span>Day 14 Alerts (24h to Due)</span>
+					<div class="kpi-icon">🔔</div>
+				</div>
+				<div class="kpi-value" id="kpi-day14" style="color: #b45309;">-</div>
+				<div class="kpi-note">Automated WhatsApp alert ready</div>
+			</div>
+
+			<div class="kpi-card" style="border-top: 3px solid #dc2626;">
+				<div class="kpi-header">
+					<span>Due Today / Overdue</span>
+					<div class="kpi-icon">⚠️</div>
+				</div>
+				<div class="kpi-value" id="kpi-due-overdue" style="color: #dc2626;">-</div>
+				<div class="kpi-note">Time-sensitive return window</div>
+			</div>
+
+			<div class="kpi-card" style="border-top: 3px solid #25d366;">
+				<div class="kpi-header">
+					<span>WhatsApp Reminders Sent</span>
+					<div class="kpi-icon">💬</div>
+				</div>
+				<div class="kpi-value" id="kpi-reminders-sent">-</div>
+				<div class="kpi-note">Direct to student's attention</div>
+			</div>
+
 			<div class="kpi-card">
 				<div class="kpi-header">
 					<span>Total Registered Members</span>
@@ -689,35 +908,29 @@
 
 			<div class="kpi-card">
 				<div class="kpi-header">
-					<span>Active Reservations</span>
-					<div class="kpi-icon">📖</div>
-				</div>
-				<div class="kpi-value" id="kpi-reservations">-</div>
-				<div class="kpi-note">48-hour active hold queue</div>
-			</div>
-
-			<div class="kpi-card">
-				<div class="kpi-header">
 					<span>Catalog Inventory</span>
 					<div class="kpi-icon">📚</div>
 				</div>
 				<div class="kpi-value" id="kpi-books">-</div>
-				<div class="kpi-note">Publicly available books</div>
-			</div>
-
-			<div class="kpi-card">
-				<div class="kpi-header">
-					<span>Newsletter Subscribers</span>
-					<div class="kpi-icon">📬</div>
-				</div>
-				<div class="kpi-value" id="kpi-subscribers">-</div>
-				<div class="kpi-note">Reading list members</div>
+				<div class="kpi-note">Books in database</div>
 			</div>
 		</div>
 
 		<!-- Navigation Tabs -->
 		<div class="tabs-bar">
-			<button class="tab-pill active" data-target="pane-members">
+			<button class="tab-pill active" data-target="pane-issues">
+				<span>📋 Issue Desk &amp; WhatsApp Alerts</span>
+				<span class="tab-count" id="count-issues">0</span>
+			</button>
+			<button class="tab-pill" data-target="pane-reminder-logs">
+				<span>📱 Alert Logs</span>
+				<span class="tab-count" id="count-reminder-logs">0</span>
+			</button>
+			<button class="tab-pill" data-target="pane-catalog">
+				<span>📚 Catalog</span>
+				<span class="tab-count" id="count-catalog">0</span>
+			</button>
+			<button class="tab-pill" data-target="pane-members">
 				<span>👥 Members</span>
 				<span class="tab-count" id="count-members">0</span>
 			</button>
@@ -725,18 +938,103 @@
 				<span>📖 Reservations</span>
 				<span class="tab-count" id="count-reservations">0</span>
 			</button>
-			<button class="tab-pill" data-target="pane-catalog">
-				<span>📚 Catalog</span>
-				<span class="tab-count" id="count-catalog">0</span>
-			</button>
 			<button class="tab-pill" data-target="pane-subscribers">
 				<span>📬 Subscribers</span>
 				<span class="tab-count" id="count-subscribers">0</span>
 			</button>
 		</div>
 
+		<!-- PANE 0: BOOK ISSUES & WHATSAPP DESK -->
+		<section id="pane-issues" class="view-pane active">
+			<div class="table-toolbar">
+				<div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; flex-grow: 1;">
+					<div class="table-search" style="max-width: 360px;">
+						<span>🔍</span>
+						<input type="text" id="search-issues" placeholder="Search by student, roll number, phone, or title...">
+					</div>
+					<select id="filter-issue-status" style="padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); font-family: inherit; font-size: 13px; color: var(--ink);">
+						<option value="all">All Loans (Active &amp; History)</option>
+						<option value="day14">⚠️ Day 14 (1d Before Due Date)</option>
+						<option value="due_today">🚨 Due Today (Day 15)</option>
+						<option value="overdue">❗ Overdue Loans</option>
+						<option value="active">Active Loans Only</option>
+						<option value="returned">Returned Only</option>
+					</select>
+				</div>
+				<div style="display: flex; gap: 8px; flex-wrap: wrap;">
+					<button id="open-issue-modal-btn" class="action-btn" type="button" style="background: var(--ink); border-color: var(--ink);">
+						<span>+ Issue Book to Student</span>
+					</button>
+					<button id="run-scan-btn" class="action-btn scan-btn" type="button" title="Auto-scan loans and queue WhatsApp 24h &amp; due date alerts">
+						<span>⚡ Auto-Reminder Scan</span>
+					</button>
+					<button id="open-sim-info-btn" class="action-btn whatsapp-btn" type="button" title="Open live interactive WhatsApp phone simulator">
+						<span>📱 WhatsApp Simulator</span>
+					</button>
+				</div>
+			</div>
+
+			<div class="data-card">
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Book Title</th>
+								<th>Student &amp; Roll No</th>
+								<th>WhatsApp Phone</th>
+								<th>Issue Date</th>
+								<th>Due Date (15d)</th>
+								<th>Loan Cycle</th>
+								<th>Reminder State</th>
+								<th>Demonstration &amp; Actions</th>
+							</tr>
+						</thead>
+						<tbody id="tbody-issues">
+							<tr><td colspan="9" class="empty-table">Loading issued books...</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- PANE: WHATSAPP ALERT DISPATCH LOGS -->
+		<section id="pane-reminder-logs" class="view-pane">
+			<div class="table-toolbar">
+				<div class="table-search" style="max-width: 360px;">
+					<span>🔍</span>
+					<input type="text" id="search-reminder-logs" placeholder="Search alert logs by student, phone, or title...">
+				</div>
+				<div style="font: 500 12px 'DM Mono', monospace; color: var(--ink-soft); display: flex; align-items: center; gap: 8px;">
+					<span>⚡ Prevention Over Punishment: WhatsApp instant alert delivery</span>
+				</div>
+			</div>
+			<div class="data-card">
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th>Log ID</th>
+								<th>Timestamp</th>
+								<th>Student</th>
+								<th>WhatsApp Number</th>
+								<th>Book Title</th>
+								<th>Alert Type</th>
+								<th>Channel</th>
+								<th>Message Preview</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody id="tbody-reminder-logs">
+							<tr><td colspan="9" class="empty-table">Loading reminder dispatch logs...</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
 		<!-- PANE 1: MEMBERS -->
-		<section id="pane-members" class="view-pane active">
+		<section id="pane-members" class="view-pane">
 			<div class="table-toolbar">
 				<div class="table-search">
 					<span>🔍</span>
@@ -894,6 +1192,96 @@
 		</form>
 	</dialog>
 
+	<!-- Issue Book Modal Dialog -->
+	<dialog id="admin-issue-dialog" class="admin-modal" style="width: min(480px, calc(100% - 32px));">
+		<div class="modal-title-bar">
+			<h2>Issue Book to Student</h2>
+			<button id="close-issue-modal-btn" class="modal-close-btn" type="button">&times;</button>
+		</div>
+		<form id="admin-issue-form">
+			<div class="form-group">
+				<label for="issue-book-select">Book No &amp; Title</label>
+				<select id="issue-book-select" required style="width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; background: var(--white);">
+					<option value="">Loading available books from catalog...</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="issue-student-name">Student Full Name</label>
+				<input type="text" id="issue-student-name" required placeholder="e.g. Rahul Sharma">
+			</div>
+			<div class="form-group">
+				<label for="issue-student-roll">Enrollment No / Student Roll No</label>
+				<input type="text" id="issue-student-roll" required placeholder="e.g. 2026RRU-CS042 or ENR8892">
+			</div>
+			<div class="form-group">
+				<label for="issue-student-phone">WhatsApp Number (e.g. 919876543210 or 9876543210)</label>
+				<input type="tel" id="issue-student-phone" required placeholder="e.g. 919876543210 (with country code)">
+			</div>
+			<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+				<div class="form-group">
+					<label for="issue-date">Date of Issue</label>
+					<input type="date" id="issue-date" required>
+				</div>
+				<div class="form-group">
+					<label for="issue-due-date">Due Date (15 Days)</label>
+					<input type="date" id="issue-due-date" required>
+				</div>
+			</div>
+			<div style="background: rgba(18, 140, 126, 0.08); border: 1px solid rgba(18, 140, 126, 0.25); border-radius: 6px; padding: 10px 12px; margin-bottom: 14px; font-size: 11.5px; color: #075e54; line-height: 1.5;">
+				🔔 <strong>Automated WhatsApp Reminder Policy:</strong><br>
+				Alert #1 triggers automatically on <strong>Day 14</strong> (1 day before due date).<br>
+				Alert #2 triggers on <strong>Day 15 (Due Date)</strong>.
+			</div>
+			<button type="submit" class="action-btn" style="width: 100%; padding: 12px; justify-content: center;">
+				Issue Book &amp; Activate 15-Day Loan
+			</button>
+		</form>
+	</dialog>
+
+	<!-- WhatsApp Live Phone Simulator Modal Dialog -->
+	<dialog id="whatsapp-phone-dialog" class="whatsapp-phone-dialog">
+		<div class="phone-top-bar">
+			<div class="phone-contact-info">
+				<div class="phone-avatar">💬</div>
+				<div class="phone-meta">
+					<h4 id="sim-student-name">Student Name</h4>
+					<p><span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #00a884; margin-right: 4px;"></span><span id="sim-student-phone">+91 98765 43210</span> · Online</p>
+				</div>
+			</div>
+			<button id="close-sim-modal-btn" type="button" style="border: none; background: transparent; color: #aebac1; font-size: 22px; cursor: pointer;">&times;</button>
+		</div>
+
+		<div class="phone-body" id="sim-chat-body">
+			<div style="text-align: center; margin-bottom: 16px;">
+				<span style="background: rgba(17, 27, 33, 0.85); color: #8696a0; font-size: 10.5px; padding: 4px 10px; border-radius: 6px; font-family: 'DM Mono', monospace;">
+					TODAY · 24-HOUR AUTOMATED NOTICE
+				</span>
+			</div>
+			<div class="chat-bubble" id="sim-bubble-text">
+				Loading automated WhatsApp reminder template...
+			</div>
+			<div class="chat-time-tick">
+				<span id="sim-bubble-time">10:00 AM</span>
+				<span class="double-tick">✓✓</span>
+			</div>
+		</div>
+
+		<div class="phone-bottom-bar">
+			<a id="sim-open-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer" class="action-btn whatsapp-btn" style="width: 100%; justify-content: center; text-decoration: none; padding: 11px;">
+				<span>📱 Open in Real WhatsApp Web (wa.me) ↗</span>
+			</a>
+		</div>
+
+		<div style="background: #111b21; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+			<span style="color: #8696a0; font-size: 11px; font-family: 'DM Mono', monospace;">Live Demo Simulation:</span>
+			<div style="display: flex; gap: 6px;">
+				<button id="sim-btn-day14" class="action-btn sim-btn" type="button" title="Fast forward this loan to Day 14">⏩ Day 14 (1d to Due)</button>
+				<button id="sim-btn-day15" class="action-btn sim-btn" type="button" title="Fast forward to Due Date">🚨 Day 15 (Due Today)</button>
+				<button id="sim-btn-overdue" class="action-btn sim-btn" type="button" title="Fast forward to Overdue">❗ Overdue</button>
+			</div>
+		</div>
+	</dialog>
+
 	<div id="admin-toast" class="toast"></div>
 
 	<script>
@@ -905,6 +1293,9 @@
 		let allReservations = [];
 		let allBooks = [];
 		let allSubscribers = [];
+		let allIssues = [];
+		let allReminderLogs = [];
+		let currentSimIssueId = null;
 
 		const loginView = document.getElementById('admin-login-view');
 		const dashView = document.getElementById('admin-dashboard-view');
@@ -938,6 +1329,27 @@
 			} catch {
 				return String(d);
 			}
+		}
+
+		function formatDateOnly(d) {
+			if (!d) return '-';
+			try {
+				const date = new Date(d);
+				return date.toLocaleDateString();
+			} catch {
+				return String(d);
+			}
+		}
+
+		function getTodayISO() {
+			const d = new Date();
+			return d.toISOString().split('T')[0];
+		}
+
+		function addDaysISO(dateStr, days) {
+			const d = new Date(dateStr);
+			d.setDate(d.getDate() + days);
+			return d.toISOString().split('T')[0];
 		}
 
 		// Login Form Submission
@@ -1007,6 +1419,8 @@
 		async function loadAllData() {
 			await Promise.all([
 				fetchStats(),
+				fetchIssues(),
+				fetchReminderLogs(),
 				fetchMembers(),
 				fetchReservations(),
 				fetchCatalog(),
@@ -1031,11 +1445,379 @@
 					document.getElementById('kpi-reservations').textContent = data.stats.activeReservations;
 					document.getElementById('kpi-books').textContent = data.stats.totalBooks;
 					document.getElementById('kpi-subscribers').textContent = data.stats.totalSubscribers;
+
+					const activeIssuesEl = document.getElementById('kpi-active-issues');
+					if (activeIssuesEl) activeIssuesEl.textContent = data.stats.activeIssuesCount ?? data.stats.activeIssues ?? 0;
+
+					const day14El = document.getElementById('kpi-day14');
+					if (day14El) day14El.textContent = data.stats.day14Count ?? 0;
+
+					const dueOverdueEl = document.getElementById('kpi-due-overdue');
+					if (dueOverdueEl) dueOverdueEl.textContent = (data.stats.dueTodayCount ?? 0) + (data.stats.overdueCount ?? 0);
+
+					const remSentEl = document.getElementById('kpi-reminders-sent');
+					if (remSentEl) remSentEl.textContent = data.stats.totalRemindersSent ?? 0;
 				}
 			} catch (err) {
 				console.error('Error fetching stats:', err);
 			}
 		}
+
+		// ==========================================
+		// BOOK ISSUE DESK & 14-DAY AUTO REMINDERS
+		// ==========================================
+		async function fetchIssues() {
+			try {
+				const res = await fetch('/api/issues');
+				const data = await res.json();
+				allIssues = data.issues || [];
+				const countEl = document.getElementById('count-issues');
+				if (countEl) countEl.textContent = allIssues.length;
+				applyIssueFilters();
+			} catch (err) {
+				console.error('Error loading issues:', err);
+				document.getElementById('tbody-issues').innerHTML = '<tr><td colspan="9" class="empty-table">Error loading book issues.</td></tr>';
+			}
+		}
+
+		function applyIssueFilters() {
+			const searchInput = document.getElementById('search-issues');
+			const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+			const statusSelect = document.getElementById('filter-issue-status');
+			const statusFilter = statusSelect ? statusSelect.value : 'all';
+
+			let filtered = allIssues;
+
+			if (statusFilter === 'day14') {
+				filtered = filtered.filter(i => i.loanStatus === 'day14_reminder' && i.status === 'issued');
+			} else if (statusFilter === 'due_today') {
+				filtered = filtered.filter(i => i.loanStatus === 'due_today' && i.status === 'issued');
+			} else if (statusFilter === 'overdue') {
+				filtered = filtered.filter(i => i.loanStatus === 'overdue' && i.status === 'issued');
+			} else if (statusFilter === 'active') {
+				filtered = filtered.filter(i => i.status === 'issued');
+			} else if (statusFilter === 'returned') {
+				filtered = filtered.filter(i => i.status === 'returned');
+			}
+
+			if (q) {
+				filtered = filtered.filter(i =>
+					(i.student_name && i.student_name.toLowerCase().includes(q)) ||
+					(i.student_roll_no && i.student_roll_no.toLowerCase().includes(q)) ||
+					(i.student_phone && i.student_phone.toLowerCase().includes(q)) ||
+					(i.book_title && i.book_title.toLowerCase().includes(q))
+				);
+			}
+
+			renderIssues(filtered);
+		}
+
+		function renderIssues(list) {
+			const tbody = document.getElementById('tbody-issues');
+			if (!tbody) return;
+
+			if (!list || list.length === 0) {
+				tbody.innerHTML = '<tr><td colspan="9" class="empty-table">No loans found. Click "+ Issue Book to Student" above to issue a book.</td></tr>';
+				return;
+			}
+
+			tbody.innerHTML = list.map(issue => {
+				const isReturned = issue.status === 'returned';
+				let reminderBadge = '';
+				let cycleBadge = '';
+
+				if (isReturned) {
+					reminderBadge = `<span class="badge" style="background: rgba(0,0,0,0.06); color: var(--ink-soft);">Returned (${formatDateOnly(issue.return_date)})</span>`;
+					cycleBadge = `<span class="badge" style="background: rgba(0,0,0,0.05); color: var(--ink-soft);">Loan Closed</span>`;
+				} else if (issue.loanStatus === 'day14_reminder') {
+					reminderBadge = `
+						<span class="badge badge-day14" title="1 Day Before Due Date: Automated WhatsApp reminder ready!">
+							<span class="badge-dot-day14"></span> Day 14 (1d to Due)
+						</span>`;
+					cycleBadge = `<span class="badge badge-day14">Day ${issue.currentLoanDay} of 15 (Tomorrow!)</span>`;
+				} else if (issue.loanStatus === 'due_today') {
+					reminderBadge = `<span class="badge badge-duetoday" title="Due Today! Return before 8:00 PM">🚨 Due Today</span>`;
+					cycleBadge = `<span class="badge badge-duetoday">Day 15 of 15 (Due Today)</span>`;
+				} else if (issue.loanStatus === 'overdue') {
+					reminderBadge = `<span class="badge badge-overdue" title="Overdue! Fine ₹${issue.fineAmount}">❗ Overdue (${Math.abs(issue.daysRemaining)}d)</span>`;
+					cycleBadge = `<span class="badge badge-overdue">Day ${issue.currentLoanDay} · Late Fine ₹${issue.fineAmount}</span>`;
+				} else {
+					reminderBadge = `<span class="badge badge-normal">Active (No Alert Yet)</span>`;
+					cycleBadge = `<span class="badge badge-normal">Day ${issue.currentLoanDay} of 15 (${issue.daysRemaining}d left)</span>`;
+				}
+
+				return `
+					<tr id="row-issue-${issue.id}">
+						<td><strong>#${issue.id}</strong></td>
+						<td style="max-width: 220px;">
+							<div style="font-weight: 600; color: var(--ink); line-height: 1.3;">${esc(issue.book_title)}</div>
+							<div style="font-size: 11px; color: var(--ink-soft); font-family: 'DM Mono', monospace;">Book ID: #${issue.book_id}</div>
+						</td>
+						<td>
+							<div style="font-weight: 600;">${esc(issue.student_name)}</div>
+							<div style="font-size: 11.5px; font-family: 'DM Mono', monospace; color: var(--accent); font-weight: 500;">
+								Roll / Enr: ${esc(issue.student_roll_no)}
+							</div>
+						</td>
+						<td>
+							<div style="display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 12px;">
+								<span style="color: #25D366; font-size: 14px;">💬</span>
+								<span>+${esc(issue.student_phone)}</span>
+							</div>
+						</td>
+						<td style="white-space: nowrap; font-family: 'DM Mono', monospace; font-size: 12px;">
+							${esc(issue.issue_date)}
+						</td>
+						<td style="white-space: nowrap; font-family: 'DM Mono', monospace; font-size: 12px;">
+							<strong style="color: ${issue.daysRemaining <= 1 && !isReturned ? '#c5221f' : 'inherit'};">${esc(issue.due_date)}</strong>
+						</td>
+						<td>${cycleBadge}</td>
+						<td>${reminderBadge}</td>
+						<td>
+							<div style="display: flex; flex-direction: column; gap: 5px;">
+								<div style="display: flex; gap: 5px;">
+									<button class="action-btn whatsapp-btn" style="padding: 4px 8px; font-size: 11px;" onclick="openWhatsAppForIssue(${issue.id})" title="Direct WhatsApp Web Click-to-Chat">
+										<span>📱 WhatsApp</span>
+									</button>
+									<button class="action-btn" style="padding: 4px 8px; font-size: 11px; background: #075e54; border-color: #075e54; color: #fff;" onclick="previewWhatsAppSimulation(${issue.id})" title="Preview in Phone Simulator">
+										<span>👁️ Phone View</span>
+									</button>
+								</div>
+								${!isReturned ? `
+									<div style="display: flex; gap: 3px; align-items: center;">
+										<span style="font-size: 9px; font-family: 'DM Mono', monospace; color: var(--ink-soft); text-transform: uppercase;">Sim:</span>
+										<button class="action-btn sim-btn" style="padding: 2px 5px; font-size: 10px;" onclick="simulateScenario(${issue.id}, 'day14')" title="Fast-forward loan to Day 14 (1 day before due date)">Day 14</button>
+										<button class="action-btn sim-btn" style="padding: 2px 5px; font-size: 10px;" onclick="simulateScenario(${issue.id}, 'day15')" title="Fast-forward loan to Day 15 (Due Today)">Due Day</button>
+										<button class="action-btn sim-btn" style="padding: 2px 5px; font-size: 10px;" onclick="simulateScenario(${issue.id}, 'overdue')" title="Fast-forward loan to Overdue">Overdue</button>
+									</div>
+									<div style="display: flex; gap: 5px; margin-top: 2px;">
+										<button class="action-btn return-btn" style="padding: 4px 8px; font-size: 11px; flex: 1;" onclick="returnBookItem(${issue.id})" title="Mark book returned">
+											📥 Return
+										</button>
+										<button class="btn-delete" style="padding: 4px 8px; font-size: 11px;" onclick="deleteIssueItem(${issue.id})">
+											Delete
+										</button>
+									</div>
+								` : `
+									<button class="btn-delete" style="padding: 4px 8px; font-size: 11px;" onclick="deleteIssueItem(${issue.id})">
+										Delete Record
+									</button>
+								`}
+							</div>
+						</td>
+					</tr>
+				`;
+			}).join('');
+		}
+
+		// Return Book
+		window.returnBookItem = async function(issueId) {
+			if (!confirm('Mark this book as returned to the Circulation Desk?')) return;
+			try {
+				const res = await fetch(`/api/issues/${issueId}/return`, { method: 'POST' });
+				const data = await res.json();
+				if (res.ok && data.success) {
+					showToast('✓ Book returned successfully! Copy restored to catalog.');
+					await fetchIssues();
+					await fetchCatalog();
+					await fetchStats();
+				} else {
+					showToast(data.error || 'Failed to return book.');
+				}
+			} catch {
+				showToast('Error connecting to server.');
+			}
+		};
+
+		// Delete Issue Record
+		window.deleteIssueItem = async function(issueId) {
+			if (!confirm('Delete this issue record from the database?')) return;
+			try {
+				const res = await fetch(`/api/issues/${issueId}`, { method: 'DELETE' });
+				if (res.ok) {
+					showToast('Issue record deleted.');
+					await fetchIssues();
+					await fetchCatalog();
+					await fetchStats();
+				} else {
+					showToast('Failed to delete issue record.');
+				}
+			} catch {
+				showToast('Error connecting to server.');
+			}
+		};
+
+		// Direct WhatsApp Web click-to-chat
+		window.openWhatsAppForIssue = async function(issueId) {
+			try {
+				const res = await fetch('/api/reminders/generate-whatsapp', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ issue_id: issueId })
+				});
+				const data = await res.json();
+				if (data.success && data.whatsappUrl) {
+					window.open(data.whatsappUrl, '_blank');
+					showToast('Opening WhatsApp Web with pre-drafted reminder...');
+					await fetchReminderLogs();
+					await fetchStats();
+				} else {
+					showToast(data.error || 'Could not generate WhatsApp message.');
+				}
+			} catch {
+				showToast('Network error opening WhatsApp.');
+			}
+		};
+
+		// Fast-Forward Simulation
+		window.simulateScenario = async function(issueId, scenario) {
+			try {
+				const res = await fetch(`/api/issues/${issueId}/simulate`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ scenario })
+				});
+				const data = await res.json();
+				if (res.ok && data.success) {
+					showToast(`⚡ Loan fast-forwarded to ${scenario.toUpperCase()}! Reminder rules updated.`);
+					await fetchIssues();
+					await fetchStats();
+					if (document.getElementById('whatsapp-phone-dialog')?.open) {
+						previewWhatsAppSimulation(issueId);
+					}
+				} else {
+					showToast(data.error || 'Simulation failed.');
+				}
+			} catch {
+				showToast('Simulation network error.');
+			}
+		};
+
+		// Fetch Reminder Logs
+		async function fetchReminderLogs() {
+			try {
+				const res = await fetch('/api/reminders/logs');
+				const data = await res.json();
+				allReminderLogs = data.logs || [];
+				const countEl = document.getElementById('count-reminder-logs');
+				if (countEl) countEl.textContent = allReminderLogs.length;
+				applyReminderLogsFilter();
+			} catch (err) {
+				console.error('Error loading reminder logs:', err);
+				document.getElementById('tbody-reminder-logs').innerHTML = '<tr><td colspan="9" class="empty-table">Error loading alert logs.</td></tr>';
+			}
+		}
+
+		function applyReminderLogsFilter() {
+			const searchInput = document.getElementById('search-reminder-logs');
+			const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+			let filtered = allReminderLogs;
+			if (q) {
+				filtered = filtered.filter(l =>
+					(l.student_name && l.student_name.toLowerCase().includes(q)) ||
+					(l.student_phone && l.student_phone.toLowerCase().includes(q)) ||
+					(l.book_title && l.book_title.toLowerCase().includes(q)) ||
+					(l.reminder_type && l.reminder_type.toLowerCase().includes(q))
+				);
+			}
+			renderReminderLogs(filtered);
+		}
+
+		function renderReminderLogs(list) {
+			const tbody = document.getElementById('tbody-reminder-logs');
+			if (!tbody) return;
+
+			if (!list || list.length === 0) {
+				tbody.innerHTML = '<tr><td colspan="9" class="empty-table">No reminder logs recorded yet. Automated scans will record all outgoing WhatsApp notices here.</td></tr>';
+				return;
+			}
+
+			tbody.innerHTML = list.map(l => {
+				let typeBadge = '';
+				if (l.reminder_type === 'day14_prior') {
+					typeBadge = '<span class="badge badge-day14"><span class="badge-dot-day14"></span> Day 14 (24h Notice)</span>';
+				} else if (l.reminder_type === 'due_date') {
+					typeBadge = '<span class="badge badge-duetoday">🚨 Due Date</span>';
+				} else if (l.reminder_type === 'overdue') {
+					typeBadge = '<span class="badge badge-overdue">❗ Overdue Notice</span>';
+				} else {
+					typeBadge = `<span class="badge badge-normal">${esc(l.reminder_type)}</span>`;
+				}
+
+				return `
+					<tr>
+						<td><strong>#${l.id}</strong></td>
+						<td style="font-family: 'DM Mono', monospace; font-size: 11px;">${formatDate(l.sent_at)}</td>
+						<td><strong>${esc(l.student_name)}</strong></td>
+						<td style="font-family: 'DM Mono', monospace; font-size: 12px;">+${esc(l.student_phone)}</td>
+						<td style="max-width: 200px; font-weight: 500;">${esc(l.book_title)}</td>
+						<td>${typeBadge}</td>
+						<td><span style="color: #25D366; font-weight: 600;">📱 ${esc(l.channel || 'WhatsApp')}</span></td>
+						<td style="max-width: 250px;">
+							<div style="font-size: 11.5px; line-height: 1.4; color: var(--ink-soft); white-space: pre-wrap; font-family: 'DM Mono', monospace; max-height: 60px; overflow-y: auto; background: rgba(0,0,0,0.02); padding: 4px 6px; border-radius: 4px;">${esc(l.message_text)}</div>
+						</td>
+						<td><span class="badge active">✓ Dispatched</span></td>
+					</tr>
+				`;
+			}).join('');
+		}
+
+		// Populate book select for issue modal
+		function populateBookSelect() {
+			const select = document.getElementById('issue-book-select');
+			if (!select) return;
+			select.innerHTML = '<option value="">-- Choose Book from Catalog --</option>';
+
+			if (!allBooks || allBooks.length === 0) {
+				select.innerHTML = '<option value="">No books in catalog</option>';
+				return;
+			}
+
+			allBooks.forEach(b => {
+				const opt = document.createElement('option');
+				opt.value = b.id;
+				opt.textContent = `[#${b.id}] ${b.title} — ${b.author} ${b.available ? '(Available)' : '(Currently Borrowed)'}`;
+				select.appendChild(opt);
+			});
+		}
+
+		// Preview WhatsApp Simulation Modal
+		const simModal = document.getElementById('whatsapp-phone-dialog');
+		window.previewWhatsAppSimulation = async function(issueId) {
+			currentSimIssueId = issueId;
+			try {
+				const res = await fetch('/api/reminders/generate-whatsapp', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ issue_id: issueId })
+				});
+				const data = await res.json();
+				if (data.success) {
+					const issue = data.issue;
+					document.getElementById('sim-student-name').textContent = issue.student_name;
+					document.getElementById('sim-student-phone').textContent = `+${issue.student_phone} (Enr: ${issue.student_roll_no})`;
+
+					let formatted = esc(data.messageText)
+						.replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+						.replace(/_(.*?)_/g, '<em>$1</em>')
+						.replace(/\n/g, '<br>');
+
+					document.getElementById('sim-bubble-text').innerHTML = formatted;
+
+					const now = new Date();
+					document.getElementById('sim-bubble-time').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+					const waLink = document.getElementById('sim-open-whatsapp-link');
+					waLink.href = data.whatsappUrl;
+
+					if (simModal) simModal.showModal();
+				} else {
+					showToast(data.error || 'Failed to generate WhatsApp preview.');
+				}
+			} catch {
+				showToast('Network error opening preview.');
+			}
+		};
 
 		// Fetch Members
 		async function fetchMembers() {
@@ -1303,6 +2085,136 @@
 			} catch {
 				showToast('Network error saving book.');
 			}
+		});
+
+		// ==========================================
+		// ISSUE MODAL & SIMULATOR EVENT LISTENERS
+		// ==========================================
+		const issueModal = document.getElementById('admin-issue-dialog');
+		const openIssueBtn = document.getElementById('open-issue-modal-btn');
+		const closeIssueBtn = document.getElementById('close-issue-modal-btn');
+		const issueDateInput = document.getElementById('issue-date');
+		const dueDateInput = document.getElementById('issue-due-date');
+
+		if (openIssueBtn) {
+			openIssueBtn.addEventListener('click', () => {
+				populateBookSelect();
+				const todayStr = getTodayISO();
+				if (issueDateInput) issueDateInput.value = todayStr;
+				if (dueDateInput) dueDateInput.value = addDaysISO(todayStr, 15);
+				if (issueModal) issueModal.showModal();
+			});
+		}
+
+		if (closeIssueBtn) {
+			closeIssueBtn.addEventListener('click', () => issueModal.close());
+		}
+
+		if (issueModal) {
+			issueModal.addEventListener('click', e => { if (e.target === issueModal) issueModal.close(); });
+		}
+
+		if (issueDateInput) {
+			issueDateInput.addEventListener('change', () => {
+				if (issueDateInput.value && dueDateInput) {
+					dueDateInput.value = addDaysISO(issueDateInput.value, 15);
+				}
+			});
+		}
+
+		document.getElementById('admin-issue-form')?.addEventListener('submit', async e => {
+			e.preventDefault();
+			const book_id = document.getElementById('issue-book-select').value;
+			const student_name = document.getElementById('issue-student-name').value.trim();
+			const student_roll_no = document.getElementById('issue-student-roll').value.trim();
+			const student_phone = document.getElementById('issue-student-phone').value.trim();
+			const issue_date = issueDateInput ? issueDateInput.value : getTodayISO();
+			const due_date = dueDateInput ? dueDateInput.value : addDaysISO(issue_date, 15);
+
+			if (!book_id) {
+				showToast('Please select a book from the catalog.');
+				return;
+			}
+
+			try {
+				const res = await fetch('/api/issues', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ book_id, student_name, student_roll_no, student_phone, issue_date, due_date })
+				});
+				const data = await res.json();
+				if (res.ok && data.success) {
+					if (issueModal) issueModal.close();
+					document.getElementById('admin-issue-form').reset();
+					showToast(`✓ Book successfully issued to ${student_name}! 15-day loan registered.`);
+					await fetchIssues();
+					await fetchCatalog();
+					await fetchStats();
+				} else {
+					showToast(data.error || 'Failed to issue book.');
+				}
+			} catch (err) {
+				showToast('Network error issuing book.');
+			}
+		});
+
+		// Live Search & Filters for Issue Desk & Alert Logs
+		document.getElementById('search-issues')?.addEventListener('input', applyIssueFilters);
+		document.getElementById('filter-issue-status')?.addEventListener('change', applyIssueFilters);
+		document.getElementById('search-reminder-logs')?.addEventListener('input', applyReminderLogsFilter);
+
+		// Automated Scanner Button
+		document.getElementById('run-scan-btn')?.addEventListener('click', async () => {
+			const btn = document.getElementById('run-scan-btn');
+			const originalText = btn.innerHTML;
+			btn.innerHTML = '<span>⏳ Scanning active loans...</span>';
+			try {
+				const res = await fetch('/api/reminders/scan', { method: 'POST' });
+				const data = await res.json();
+				btn.innerHTML = originalText;
+				if (data.success) {
+					showToast(`⚡ Scanner executed! Dispatched ${data.triggeredCount} WhatsApp reminder(s) (Day 14 / Due / Overdue).`);
+					await fetchIssues();
+					await fetchReminderLogs();
+					await fetchStats();
+				} else {
+					showToast(data.error || 'Scan encountered an issue.');
+				}
+			} catch {
+				btn.innerHTML = originalText;
+				showToast('Network error during scan.');
+			}
+		});
+
+		// WhatsApp Simulator Modal handlers
+		document.getElementById('close-sim-modal-btn')?.addEventListener('click', () => {
+			document.getElementById('whatsapp-phone-dialog')?.close();
+		});
+
+		document.getElementById('whatsapp-phone-dialog')?.addEventListener('click', e => {
+			const dialog = document.getElementById('whatsapp-phone-dialog');
+			if (e.target === dialog) dialog.close();
+		});
+
+		document.getElementById('open-sim-info-btn')?.addEventListener('click', () => {
+			const target = allIssues.find(i => i.loanStatus === 'day14_reminder' && i.status === 'issued') ||
+			               allIssues.find(i => i.status === 'issued') ||
+			               allIssues[0];
+			if (target) {
+				previewWhatsAppSimulation(target.id);
+			} else {
+				showToast('No loans available to simulate yet. Issue a book first!');
+			}
+		});
+
+		document.getElementById('sim-btn-day14')?.addEventListener('click', () => {
+			if (currentSimIssueId) simulateScenario(currentSimIssueId, 'day14');
+		});
+		document.getElementById('sim-btn-day15')?.addEventListener('click', () => {
+			if (currentSimIssueId) simulateScenario(currentSimIssueId, 'day15');
+		});
+		document.getElementById('sim-btn-overdue')?.addEventListener('click', () => {
+			if (currentSimIssueId) simulateScenario(currentSimIssueId, 'overdue');
 		});
 
 		// ==========================================

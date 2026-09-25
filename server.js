@@ -293,6 +293,203 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
+// GET /api/rru-info - Rashtriya Raksha University LLRB official data & metrics
+app.get('/api/rru-info', (req, res) => {
+  res.json({
+    success: true,
+    institution: {
+      name: 'Rashtriya Raksha University (RRU)',
+      subtitle: 'An Institution of National Importance, Ministry of Home Affairs, Government of India',
+      branch: 'Library & Learning Resources Branch (LLRB)',
+      campus: 'Lavad, Dehgam, Gandhinagar - 382305, Gujarat, India',
+      officialUrl: 'https://rru.ac.in/campus-life/library',
+      opacUrl: 'https://opac.rru.ac.in',
+      email: 'llrb@rru.ac.in'
+    },
+    collectionMetrics: {
+      printBooks: '15,131+',
+      ebooks: '5,12,324+',
+      ejournals: '17,533+',
+      databases: '56+',
+      eperiodicals: '11,116+',
+      printPeriodicals: '43+',
+      system: 'Koha Integrated Library Management System (LMS)',
+      remoteAccess: 'MyLOFT Platform'
+    },
+    timings: {
+      weekdays: 'Monday – Friday: 08:00 AM – 08:00 PM',
+      weekends: 'Saturday – Sunday: 10:00 AM – 06:00 PM',
+      examPeriod: 'Extended study hours up to 11:00 PM',
+      digitalAccess: '24/7 Remote Access via MyLOFT & Web OPAC'
+    },
+    keyPersonnel: [
+      { name: 'Dr. Upendra Pandya', role: 'Deputy Librarian', responsibility: 'Library Administration', email: 'dyl.llrb@rru.ac.in' },
+      { name: 'Mr. Pragneshkumar Parekh', role: 'Assistant Librarian', responsibility: 'Overall Library Activities', email: 'library@rru.ac.in' },
+      { name: 'Mr. Gaurang Raval', role: 'Library & Information Officer', responsibility: 'Online Resources, Databases, Remote Access, Koha-LMS', email: 'lio2.llrb@rru.ac.in' }
+    ]
+  });
+});
+
+// ==========================================
+// BOOK ISSUES & WHATSAPP AUTO-REMINDER API
+// ==========================================
+
+// GET /api/issues - List all issued books with loan metrics & reminder status
+app.get('/api/issues', (req, res) => {
+  try {
+    const filter = req.query.filter || 'all';
+    const issues = db.getAllIssues(filter);
+    res.json({ success: true, count: issues.length, issues });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/issues/:id - Get a single issue record
+app.get('/api/issues/:id', (req, res) => {
+  try {
+    const issue = db.getIssueById(req.params.id);
+    if (!issue) return res.status(404).json({ success: false, error: 'Issue record not found' });
+    res.json({ success: true, issue });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/issues - Issue a book to a student
+app.post('/api/issues', (req, res) => {
+  try {
+    const { book_id, student_name, student_roll_no, student_phone, issue_date, due_date } = req.body;
+    if (!book_id || !student_name || !student_roll_no || !student_phone) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide book_id, student_name, student_roll_no, and student_phone (WhatsApp number).'
+      });
+    }
+
+    const newIssue = db.createIssue({
+      book_id: Number(book_id),
+      student_name,
+      student_roll_no,
+      student_phone,
+      issue_date,
+      due_date
+    });
+
+    console.log(`[BOOK ISSUED] "${newIssue.book_title}" issued to ${newIssue.student_name} (${newIssue.student_roll_no}), WhatsApp: ${newIssue.student_phone}. Due: ${newIssue.due_date} (15 days loan)`);
+    res.status(201).json({ success: true, message: 'Book successfully issued to student.', issue: newIssue });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/issues/:id/return - Return an issued book
+app.post('/api/issues/:id/return', (req, res) => {
+  try {
+    const updated = db.returnBook(req.params.id);
+    if (!updated) return res.status(404).json({ success: false, error: 'Issue record not found' });
+    console.log(`[BOOK RETURNED] "${updated.book_title}" returned by ${updated.student_name}. Marked available in catalog.`);
+    res.json({ success: true, message: 'Book marked as returned.', issue: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// DELETE /api/issues/:id - Delete an issue record
+app.delete('/api/issues/:id', (req, res) => {
+  try {
+    const deleted = db.deleteIssue(req.params.id);
+    if (!deleted) return res.status(404).json({ success: false, error: 'Issue record not found' });
+    res.json({ success: true, message: 'Issue record deleted.' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/issues/:id/simulate - Fast-forward / simulate loan scenario
+app.post('/api/issues/:id/simulate', (req, res) => {
+  try {
+    const { scenario } = req.body; // 'day14', 'day15', 'overdue', 'day1'
+    if (!scenario) return res.status(400).json({ success: false, error: 'Please specify scenario: day14, day15, overdue, or day1.' });
+    const simulated = db.simulateIssueScenario(req.params.id, scenario);
+    if (!simulated) return res.status(404).json({ success: false, error: 'Issue record not found' });
+    console.log(`[SIMULATION TRIGGERED] Issue #${simulated.id} simulated to scenario "${scenario}" -> Status: ${simulated.badgeText}`);
+    res.json({ success: true, message: `Simulated to ${scenario}.`, issue: simulated });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/reminders/scan - Automated scheduler scanner to evaluate all loans
+app.post('/api/reminders/scan', (req, res) => {
+  try {
+    const triggered = db.scanAndTriggerReminders();
+    console.log(`[REMINDER SCAN] Evaluated active loans. Triggered ${triggered.length} automated WhatsApp reminders.`);
+    res.json({ success: true, count: triggered.length, triggered });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/reminders/logs - Get all sent reminder logs
+app.get('/api/reminders/logs', (req, res) => {
+  try {
+    const logs = db.getAllReminderLogs();
+    res.json({ success: true, count: logs.length, logs });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/reminders/generate-whatsapp - Generate WhatsApp click-to-chat URL and preview text
+app.post('/api/reminders/generate-whatsapp', (req, res) => {
+  try {
+    const { issue_id, reminder_type } = req.body;
+    const issue = db.getIssueById(issue_id);
+    if (!issue) return res.status(404).json({ success: false, error: 'Issue record not found' });
+
+    const type = reminder_type || (issue.daysRemaining === 1 ? 'day14_prior' : (issue.daysRemaining === 0 ? 'due_date' : 'overdue'));
+    const message = db.generateWhatsAppMessage(issue, type);
+    const cleanPhone = String(issue.student_phone).replace(/[^\d]/g, '');
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+
+    // Log the reminder
+    const log = db.logReminder({
+      issue_id: issue.id,
+      student_name: issue.student_name,
+      student_phone: issue.student_phone,
+      book_title: issue.book_title,
+      reminder_type: type,
+      message_text: message,
+      channel: 'WhatsApp'
+    });
+
+    res.json({
+      success: true,
+      issue,
+      reminder_type: type,
+      message,
+      whatsappUrl,
+      phone: cleanPhone,
+      log
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Periodic background auto-reminder scanner (every 30 minutes)
+setInterval(() => {
+  try {
+    const alerts = db.scanAndTriggerReminders();
+    if (alerts.length > 0) {
+      console.log(`[AUTO-SCHEDULER] Periodic background scan triggered ${alerts.length} WhatsApp reminders.`);
+    }
+  } catch (err) {
+    console.error('[AUTO-SCHEDULER ERROR]', err.message);
+  }
+}, 30 * 60 * 1000);
+
 // ==========================================
 // ADMIN PORTAL API
 // ==========================================
