@@ -56,6 +56,18 @@ db.exec(`
     password_hash TEXT NOT NULL,
     salt TEXT NOT NULL,
     role TEXT DEFAULT 'member',
+    is_verified INTEGER DEFAULT 0,
+    email_verified_at DATETIME DEFAULT NULL,
+    is_institutional INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS email_verifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL,
+    code TEXT NOT NULL,
+    is_verified INTEGER DEFAULT 0,
+    expires_at DATETIME NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -109,6 +121,11 @@ db.exec(`
     FOREIGN KEY(issue_id) REFERENCES book_issues(id) ON DELETE CASCADE
   );
 `);
+
+// Safe Schema Migrations for Mail Authenticity System
+try { db.exec('ALTER TABLE members ADD COLUMN is_verified INTEGER DEFAULT 0;'); } catch (_) {}
+try { db.exec('ALTER TABLE members ADD COLUMN email_verified_at DATETIME DEFAULT NULL;'); } catch (_) {}
+try { db.exec('ALTER TABLE members ADD COLUMN is_institutional INTEGER DEFAULT 0;'); } catch (_) {}
 
 // Password hashing helpers
 function hashPassword(password) {
@@ -215,7 +232,7 @@ function deleteBook(id) {
 }
 
 // Members / Authentication
-function createMember({ name, email, password, role = 'member' }) {
+function createMember({ name, email, password, role = 'member', isInstitutional = 0, isVerified = 0 }) {
   const existing = findMemberByEmail(email);
   if (existing) {
     const error = new Error('An account with this email already exists.');
@@ -224,15 +241,17 @@ function createMember({ name, email, password, role = 'member' }) {
   }
   const { hash, salt } = hashPassword(password);
   const stmt = db.prepare(`
-    INSERT INTO members (name, email, password_hash, salt, role)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO members (name, email, password_hash, salt, role, is_verified, is_institutional)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
-  const result = stmt.run(name, email.toLowerCase().trim(), hash, salt, role);
+  const result = stmt.run(name, email.toLowerCase().trim(), hash, salt, role, isVerified ? 1 : 0, isInstitutional ? 1 : 0);
   return {
     id: result.lastInsertRowid,
     name,
     email: email.toLowerCase().trim(),
     role,
+    is_verified: isVerified ? 1 : 0,
+    is_institutional: isInstitutional ? 1 : 0,
     created_at: new Date().toISOString()
   };
 }
@@ -252,12 +271,79 @@ function authenticateMember(email, password) {
     name: member.name,
     email: member.email,
     role: member.role,
+    is_verified: member.is_verified || 0,
+    is_institutional: member.is_institutional || 0,
     created_at: member.created_at
   };
 }
 
 function getAllMembers() {
-  return db.prepare('SELECT id, name, email, role, created_at FROM members ORDER BY id DESC').all();
+  return db.prepare('SELECT id, name, email, role, is_verified, is_institutional, created_at FROM members ORDER BY id DESC').all();
+}
+
+function saveVerificationCode(email, code, expiresMinutes = 15) {
+  const cleanEmail = email.toLowerCase().trim();
+  const expiresAt = new Date(Date.now() + expiresMinutes * 60 * 1000).toISOString();
+
+  // Invalidate any old unverified codes
+  try {
+    db.prepare('DELETE FROM email_verifications WHERE email = ? AND is_verified = 0').run(cleanEmail);
+  } catch (_) {}
+
+  const stmt = db.prepare(`
+    INSERT INTO email_verifications (email, code, expires_at)
+    VALUES (?, ?, ?)
+  `);
+  stmt.run(cleanEmail, String(code).trim(), expiresAt);
+  return { email: cleanEmail, code, expiresAt };
+}
+
+function verifyEmailCode(email, code) {
+  const cleanEmail = email.toLowerCase().trim();
+  const cleanCode = String(code).trim();
+  const now = new Date().toISOString();
+
+  const record = db.prepare(`
+    SELECT * FROM email_verifications
+    WHERE email = ? AND code = ? AND is_verified = 0 AND expires_at > ?
+    ORDER BY id DESC LIMIT 1
+  `).get(cleanEmail, cleanCode, now);
+
+  if (!record) {
+    return { success: false, error: 'Invalid or expired verification code. Please check your email or request a new code.' };
+  }
+
+  // Mark verification record as verified
+  db.prepare('UPDATE email_verifications SET is_verified = 1 WHERE id = ?').run(record.id);
+
+  // Activate member account
+  db.prepare(`
+    UPDATE members 
+    SET is_verified = 1, email_verified_at = CURRENT_TIMESTAMP 
+    WHERE email = ?
+  `).run(cleanEmail);
+
+  const member = findMemberByEmail(cleanEmail);
+  return {
+    success: true,
+    member: member ? {
+      id: member.id,
+      name: member.name,
+      email: member.email,
+      role: member.role,
+      is_verified: 1,
+      is_institutional: member.is_institutional || 0,
+      created_at: member.created_at
+    } : { email: cleanEmail, is_verified: 1 }
+  };
+}
+
+function getLatestVerificationCode(email) {
+  return db.prepare(`
+    SELECT * FROM email_verifications
+    WHERE email = ?
+    ORDER BY id DESC LIMIT 1
+  `).get(email.toLowerCase().trim());
 }
 
 function deleteMember(id) {
@@ -778,6 +864,9 @@ module.exports = {
   authenticateMember,
   getAllMembers,
   deleteMember,
+  saveVerificationCode,
+  verifyEmailCode,
+  getLatestVerificationCode,
   createReservation,
   getReservations,
   cancelReservation,

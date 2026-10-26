@@ -1049,13 +1049,14 @@
 								<th>ID</th>
 								<th>Full Name</th>
 								<th>Email Address</th>
+								<th>Mail Authenticity</th>
 								<th>Role</th>
 								<th>Registered Date</th>
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody id="tbody-members">
-							<tr><td colspan="6" class="empty-table">Loading members...</td></tr>
+							<tr><td colspan="7" class="empty-table">Loading members...</td></tr>
 						</tbody>
 					</table>
 				</div>
@@ -1843,6 +1844,12 @@
 					<td><strong>#${m.id}</strong></td>
 					<td><strong>${esc(m.name)}</strong></td>
 					<td><code>${esc(m.email)}</code></td>
+					<td>
+						<span class="badge ${m.is_verified ? 'returned' : 'overdue'}" style="font-size:0.72rem;">
+							${m.is_verified ? '✅ Authentic' : '⏳ Unverified'}
+						</span>
+						${m.is_institutional ? '<span class="badge issued" style="font-size:0.72rem; margin-left:3px;">🎓 Academic</span>' : ''}
+					</td>
 					<td><span class="badge member">${esc(m.role || 'member')}</span></td>
 					<td>${formatDate(m.created_at)}</td>
 					<td>

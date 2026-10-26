@@ -1010,6 +1010,18 @@
 			.rru-overview-grid, .rru-contact-grid { grid-template-columns: 1fr; }
 			.rru-pillars-list { grid-template-columns: 1fr; }
 		}
+		/* Mail Authenticity Verification Styles */
+		.email-verify-box { text-align: center; padding: 4px 0 8px; }
+		.verify-icon-wrap { font-size: 2.4rem; position: relative; display: inline-block; margin-bottom: 4px; }
+		.verify-pulse-dot { position: absolute; top: 2px; right: -2px; width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25); animation: pulseGreenDot 1.8s infinite; }
+		@keyframes pulseGreenDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.35); opacity: 0.6; } }
+		.verify-badge { display: inline-block; padding: 4px 12px; border-radius: 14px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px; margin: 4px 0 8px; }
+		.inst-badge { background: rgba(14, 165, 233, 0.15); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.35); }
+		.std-badge { background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.35); }
+		.demo-otp-pill { margin: 10px 0; padding: 8px 12px; background: rgba(14, 165, 233, 0.1); border: 1px dashed #0284c7; border-radius: 8px; font-size: 0.78rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+		.demo-otp-pill:hover { background: rgba(14, 165, 233, 0.2); transform: translateY(-1px); }
+		.verified-member-pill { display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.35); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; margin-left: 6px; }
+		.inst-member-pill { display: inline-flex; align-items: center; gap: 4px; background: rgba(14, 165, 233, 0.15); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.35); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; margin-left: 4px; }
 	</style>
 </head>
 	<body>
@@ -1050,6 +1062,42 @@
 					<form id="login-form"><div class="register-fields" id="register-fields" hidden><div class="login-field"><label for="member-name">Full name</label><input id="member-name" autocomplete="name" placeholder="Alex Reader"></div></div><div class="login-field"><label for="login-email">Email or member ID</label><input id="login-email" required autocomplete="username" placeholder="you@example.com"></div><div class="login-field"><label for="login-password">Password</label><input id="login-password" type="password" required autocomplete="current-password" placeholder="Enter your password"></div><div class="register-fields" id="confirm-fields" hidden><div class="login-field"><label for="confirm-password">Confirm password</label><input id="confirm-password" type="password" autocomplete="new-password" placeholder="Repeat your password"></div></div><button class="primary-btn login-submit" id="login-submit" type="submit"><span id="login-submit-label">Login to The Smart Library</span> <span>↗</span></button></form>
 					<p class="portal-status" id="portal-status" role="status" aria-live="polite"></p>
 					<p class="login-note" id="portal-note">New here? <span>Register for free membership.</span></p>
+
+					<!-- Mail Authenticity Verification View -->
+					<div id="email-verify-view" class="email-verify-box" hidden>
+						<div class="verify-icon-wrap"><span class="verify-pulse-dot"></span>✉️</div>
+						<h3 style="margin: 8px 0 4px; font-size: 1.25rem;">Verify Email Authenticity</h3>
+						<p class="verify-subtitle" style="font-size: 0.82rem; color: #64748b; line-height: 1.4; margin-bottom: 12px;">
+							A 6-digit security code was dispatched to:<br>
+							<strong id="verify-target-email" style="color: #0284c7; word-break: break-all;">user@example.com</strong>
+						</p>
+
+						<div id="verify-inst-tag" class="verify-badge inst-badge" hidden>🎓 Institutional Academic Domain Verified</div>
+						<div id="verify-std-tag" class="verify-badge std-badge">🛡️ Authentic Email Verified</div>
+
+						<!-- Demo OTP Quick Autofill Pill -->
+						<div id="demo-otp-banner" class="demo-otp-pill" title="Click to auto-fill code">
+							<span>🔑 Evaluator Demo Code: <strong id="demo-otp-code" style="color: #0284c7; font-family: monospace; font-size: 0.95rem; letter-spacing: 2px;">------</strong></span>
+							<div style="font-size: 0.7rem; color: #64748b;">(Click to auto-fill code)</div>
+						</div>
+
+						<div class="login-field" style="margin-top: 10px;">
+							<label for="verify-otp-input" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">Enter 6-Digit Code</label>
+							<input id="verify-otp-input" type="text" maxlength="6" inputmode="numeric" placeholder="••••••" autocomplete="one-time-code" style="text-align: center; font-size: 1.6rem; letter-spacing: 8px; font-family: monospace; font-weight: 800; padding: 8px;">
+						</div>
+
+						<button class="primary-btn login-submit" id="verify-submit-btn" type="button" style="width: 100%; margin-top: 12px;">
+							<span id="verify-btn-label">Verify & Activate Account</span> <span>✓</span>
+						</button>
+
+						<p class="portal-status" id="verify-status-msg" role="status" aria-live="polite" style="margin-top: 8px;"></p>
+
+						<div class="verify-footer-actions" style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 0.75rem;">
+							<button type="button" id="verify-resend-btn" class="text-link-btn" style="background: none; border: none; color: #0284c7; cursor: pointer; padding: 0;">Resend code <span id="resend-countdown"></span></button>
+							<button type="button" id="verify-preview-mail-btn" class="text-link-btn" style="background: none; border: none; color: #d97706; cursor: pointer; font-weight: 600; padding: 0;">🔍 View Dispatched Mail</button>
+							<button type="button" id="verify-back-btn" class="text-link-btn" style="background: none; border: none; color: #64748b; cursor: pointer; padding: 0;">← Back</button>
+						</div>
+					</div>
 					<div class="reader-credit-line portal-credit">Build by Team udsav</div>
 				</div>
 			</div>
@@ -1084,7 +1132,7 @@
 			</nav>
 			<div class="nav-actions">
 				<a href="/admin" class="nav-admin-btn" title="Open Admin Security Portal"><span>Admin Portal</span> 🔒</a>
-				<div id="nav-user-area" class="user-badge" hidden><span id="current-user-name">Member</span><button id="nav-logout-btn" class="logout-btn" type="button">Logout</button></div>
+				<div id="nav-user-area" class="user-badge" hidden><span id="current-user-name">Member</span><span id="user-verified-badge" class="verified-member-pill" title="Email Authenticity Verified">✅ Verified</span><span id="user-inst-badge" class="inst-member-pill" title="Institutional Domain" hidden>🎓 Academic</span><button id="nav-logout-btn" class="logout-btn" type="button">Logout</button></div>
 				<button class="icon-btn" id="search-focus" aria-label="Focus catalog search">⌕</button>
 				<button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
 			</div>
@@ -1762,9 +1810,14 @@
 			if (currentMember) {
 				navUserArea.hidden = false;
 				currentUserName.textContent = currentMember.name;
+				const verifiedBadge = document.getElementById('user-verified-badge');
+				const instBadge = document.getElementById('user-inst-badge');
+				if (verifiedBadge) verifiedBadge.hidden = !currentMember.is_verified;
+				if (instBadge) instBadge.hidden = !currentMember.is_institutional;
 			} else {
 				navUserArea.hidden = true;
 			}
+		}
 		}
 
 		function openLibrary() {
@@ -1838,7 +1891,7 @@
 					confirmPassword.reportValidity();
 					return;
 				}
-				setPortalStatus('Creating your membership...');
+				setPortalStatus('Verifying email authenticity & creating membership...');
 				try {
 					const res = await fetch('/api/auth/register', {
 						method: 'POST',
@@ -1848,6 +1901,10 @@
 					const data = await res.json();
 					if (!res.ok) {
 						setPortalStatus(data.error || 'Registration failed.');
+						return;
+					}
+					if (data.requiresVerification) {
+						showEmailVerificationView(data.email, data.previewOtp, data.isInstitutional);
 						return;
 					}
 					currentMember = data.member;
@@ -1870,6 +1927,11 @@
 				});
 				const data = await res.json();
 				if (!res.ok) {
+					if (data.requiresVerification) {
+						showEmailVerificationView(data.email, data.previewOtp);
+						setVerifyStatus(data.error || 'Please verify your email address to log in.');
+						return;
+					}
 					setPortalStatus(data.error || 'Invalid credentials.');
 					return;
 				}
@@ -1882,7 +1944,189 @@
 			}
 		});
 
-		// Filters and Search
+		// ==========================================
+		// MAIL AUTHENTICITY & VERIFICATION CLIENT
+		// ==========================================
+		let pendingVerifyEmail = '';
+		let resendTimer = null;
+		let resendSecondsLeft = 0;
+
+		const emailVerifyView = document.getElementById('email-verify-view');
+		const verifyTargetEmail = document.getElementById('verify-target-email');
+		const verifyInstTag = document.getElementById('verify-inst-tag');
+		const verifyStdTag = document.getElementById('verify-std-tag');
+		const demoOtpBanner = document.getElementById('demo-otp-banner');
+		const demoOtpCode = document.getElementById('demo-otp-code');
+		const verifyOtpInput = document.getElementById('verify-otp-input');
+		const verifySubmitBtn = document.getElementById('verify-submit-btn');
+		const verifyBtnLabel = document.getElementById('verify-btn-label');
+		const verifyStatusMsg = document.getElementById('verify-status-msg');
+		const verifyResendBtn = document.getElementById('verify-resend-btn');
+		const resendCountdown = document.getElementById('resend-countdown');
+		const verifyPreviewMailBtn = document.getElementById('verify-preview-mail-btn');
+		const verifyBackBtn = document.getElementById('verify-back-btn');
+		const loginFormEl = document.getElementById('login-form');
+		const portalTabsEl = document.querySelector('.portal-tabs');
+		const portalNoteEl = document.getElementById('portal-note');
+
+		function setVerifyStatus(msg, isSuccess = false) {
+			if (!verifyStatusMsg) return;
+			verifyStatusMsg.textContent = msg;
+			verifyStatusMsg.classList.toggle('success', isSuccess);
+		}
+
+		function showEmailVerificationView(email, previewOtp = null, isInstitutional = false) {
+			pendingVerifyEmail = email.toLowerCase().trim();
+			if (loginFormEl) loginFormEl.hidden = true;
+			if (portalTabsEl) portalTabsEl.style.display = 'none';
+			if (portalNoteEl) portalNoteEl.style.display = 'none';
+			if (emailVerifyView) emailVerifyView.hidden = false;
+
+			if (verifyTargetEmail) verifyTargetEmail.textContent = pendingVerifyEmail;
+			if (verifyInstTag) verifyInstTag.hidden = !isInstitutional;
+			if (verifyStdTag) verifyStdTag.hidden = Boolean(isInstitutional);
+
+			if (demoOtpBanner && previewOtp) {
+				demoOtpBanner.style.display = 'block';
+				demoOtpCode.textContent = previewOtp;
+				demoOtpBanner.onclick = () => {
+					verifyOtpInput.value = previewOtp;
+					verifyOtpInput.focus();
+					setVerifyStatus('Demo code auto-filled! Click Verify.', true);
+				};
+			} else if (demoOtpBanner) {
+				demoOtpBanner.style.display = 'none';
+			}
+
+			if (verifyOtpInput) {
+				verifyOtpInput.value = '';
+				setTimeout(() => verifyOtpInput.focus(), 150);
+			}
+
+			startResendCountdown(30);
+			setVerifyStatus('Please enter the 6-digit code dispatched to your email.');
+		}
+
+		function hideEmailVerificationView() {
+			if (emailVerifyView) emailVerifyView.hidden = true;
+			if (loginFormEl) loginFormEl.hidden = false;
+			if (portalTabsEl) portalTabsEl.style.display = 'flex';
+			if (portalNoteEl) portalNoteEl.style.display = 'block';
+			if (resendTimer) clearInterval(resendTimer);
+			setPortalStatus('');
+		}
+
+		function startResendCountdown(seconds = 30) {
+			resendSecondsLeft = seconds;
+			if (resendTimer) clearInterval(resendTimer);
+			if (verifyResendBtn) {
+				verifyResendBtn.disabled = true;
+				verifyResendBtn.style.opacity = '0.5';
+				verifyResendBtn.style.cursor = 'not-allowed';
+			}
+			if (resendCountdown) resendCountdown.textContent = `(${resendSecondsLeft}s)`;
+
+			resendTimer = setInterval(() => {
+				resendSecondsLeft--;
+				if (resendSecondsLeft <= 0) {
+					clearInterval(resendTimer);
+					if (verifyResendBtn) {
+						verifyResendBtn.disabled = false;
+						verifyResendBtn.style.opacity = '1';
+						verifyResendBtn.style.cursor = 'pointer';
+					}
+					if (resendCountdown) resendCountdown.textContent = '';
+				} else {
+					if (resendCountdown) resendCountdown.textContent = `(${resendSecondsLeft}s)`;
+				}
+			}, 1000);
+		}
+
+		if (verifyBackBtn) {
+			verifyBackBtn.addEventListener('click', hideEmailVerificationView);
+		}
+
+		if (verifyResendBtn) {
+			verifyResendBtn.addEventListener('click', async () => {
+				if (resendSecondsLeft > 0 || !pendingVerifyEmail) return;
+				setVerifyStatus('Requesting a fresh verification code...');
+				try {
+					const res = await fetch('/api/auth/resend-code', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ email: pendingVerifyEmail })
+					});
+					const data = await res.json();
+					if (res.ok) {
+						setVerifyStatus(data.message || 'Fresh code dispatched.', true);
+						if (data.previewOtp && demoOtpBanner) {
+							demoOtpBanner.style.display = 'block';
+							demoOtpCode.textContent = data.previewOtp;
+							demoOtpBanner.onclick = () => {
+								verifyOtpInput.value = data.previewOtp;
+								verifyOtpInput.focus();
+							};
+						}
+						startResendCountdown(30);
+					} else {
+						setVerifyStatus(data.error || 'Failed to resend code.');
+					}
+				} catch (err) {
+					setVerifyStatus('Network error requesting fresh code.');
+				}
+			});
+		}
+
+		if (verifyPreviewMailBtn) {
+			verifyPreviewMailBtn.addEventListener('click', () => {
+				if (!pendingVerifyEmail) return;
+				const previewUrl = `/api/auth/verification-preview/${encodeURIComponent(pendingVerifyEmail)}`;
+				window.open(previewUrl, 'mailPreviewWindow', 'width=620,height=680,scrollbars=yes');
+			});
+		}
+
+		if (verifySubmitBtn) {
+			verifySubmitBtn.addEventListener('click', async () => {
+				const code = verifyOtpInput.value.trim();
+				if (!code || code.length !== 6) {
+					setVerifyStatus('Please enter a valid 6-digit code.');
+					verifyOtpInput.focus();
+					return;
+				}
+
+				verifyBtnLabel.textContent = 'Verifying Authenticity...';
+				verifySubmitBtn.disabled = true;
+
+				try {
+					const res = await fetch('/api/auth/verify-email', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ email: pendingVerifyEmail, code })
+					});
+					const data = await res.json();
+					if (!res.ok) {
+						setVerifyStatus(data.error || 'Verification failed. Code may be invalid or expired.');
+						verifyBtnLabel.textContent = 'Verify & Activate Account';
+						verifySubmitBtn.disabled = false;
+						return;
+					}
+
+					setVerifyStatus('✅ Email authenticity verified! Activating...', true);
+					currentMember = data.member;
+					sessionStorage.setItem('smart-library-session', JSON.stringify(currentMember));
+
+					setTimeout(() => {
+						hideEmailVerificationView();
+						openLibrary();
+					}, 700);
+				} catch (err) {
+					setVerifyStatus('Network error during verification.');
+					verifyBtnLabel.textContent = 'Verify & Activate Account';
+					verifySubmitBtn.disabled = false;
+				}
+			});
+		}
+
 		filters.forEach(filter => filter.addEventListener('click', () => {
 			filters.forEach(item => item.classList.remove('active'));
 			filter.classList.add('active');

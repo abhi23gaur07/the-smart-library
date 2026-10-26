@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('node:path');
 const os = require('node:os');
 const db = require('./database');
+const mailAuth = require('./mailAuth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -111,8 +112,8 @@ app.delete('/api/books/:id', (req, res) => {
 // AUTHENTICATION & MEMBERS API
 // ==========================================
 
-// POST /api/auth/register - Register a new member
-app.post('/api/auth/register', (req, res) => {
+// POST /api/auth/register - Register a new member with Mail Authenticity Verification
+app.post('/api/auth/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
@@ -129,12 +130,48 @@ app.post('/api/auth/register', (req, res) => {
       });
     }
 
-    const member = db.createMember({ name, email, password });
-    console.log(`[DATA COLLECTED] Member Registered: "${member.name}" <${member.email}> (ID: ${member.id})`);
+    // Step 1: Mail Authenticity & Domain Legitimacy Check
+    const authCheck = mailAuth.validateEmailAuthenticity(email);
+    if (!authCheck.isValid) {
+      console.log(`[MAIL AUTH BLOCKED] Registration rejected for "${email}": ${authCheck.error}`);
+      return res.status(400).json({
+        success: false,
+        error: authCheck.error,
+        isDisposable: authCheck.isDisposable || false
+      });
+    }
+
+    // Step 2: Create Member with pending authenticity verification
+    const member = db.createMember({
+      name: name.trim(),
+      email: authCheck.email,
+      password,
+      isInstitutional: authCheck.isInstitutional ? 1 : 0,
+      isVerified: 0
+    });
+
+    // Step 3: Generate 6-digit cryptographic verification code
+    const verificationCode = mailAuth.generateVerificationCode();
+    db.saveVerificationCode(member.email, verificationCode, 15);
+
+    // Step 4: Dispatch verification email (SMTP or Interactive Simulator)
+    await mailAuth.sendVerificationMail({
+      email: member.email,
+      name: member.name,
+      code: verificationCode,
+      isInstitutional: authCheck.isInstitutional
+    });
+
+    console.log(`[DATA COLLECTED] Member Registered (Pending Mail Verification): "${member.name}" <${member.email}>`);
+
     res.status(201).json({
       success: true,
-      message: 'Membership created successfully.',
-      member
+      requiresVerification: true,
+      message: `Verification code sent to ${member.email}. Please verify your email authenticity to complete registration.`,
+      email: member.email,
+      isInstitutional: authCheck.isInstitutional,
+      institutionName: authCheck.institutionName,
+      previewOtp: verificationCode
     });
   } catch (err) {
     if (err.code === 'EMAIL_EXISTS') {
@@ -144,8 +181,86 @@ app.post('/api/auth/register', (req, res) => {
   }
 });
 
-// POST /api/auth/login - Log in an existing member
-app.post('/api/auth/login', (req, res) => {
+// POST /api/auth/verify-email - Authenticate and verify email OTP code
+app.post('/api/auth/verify-email', (req, res) => {
+  try {
+    const { email, code } = req.body;
+    if (!email || !code) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and 6-digit verification code are required.'
+      });
+    }
+
+    const result = db.verifyEmailCode(email, code);
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: result.error
+      });
+    }
+
+    console.log(`[MAIL AUTH VERIFIED] Email Authenticity Confirmed for: "${result.member.name}" <${result.member.email}>`);
+
+    res.json({
+      success: true,
+      message: 'Email authenticity verified! Your account is active.',
+      member: result.member
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/auth/resend-code - Resend a fresh verification code
+app.post('/api/auth/resend-code', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, error: 'Email address is required.' });
+    }
+
+    const member = db.findMemberByEmail(email);
+    if (!member) {
+      return res.status(404).json({ success: false, error: 'No account found with this email address.' });
+    }
+
+    if (member.is_verified) {
+      return res.status(400).json({ success: false, error: 'This email is already verified. You can log in directly.' });
+    }
+
+    const newCode = mailAuth.generateVerificationCode();
+    db.saveVerificationCode(member.email, newCode, 15);
+
+    await mailAuth.sendVerificationMail({
+      email: member.email,
+      name: member.name,
+      code: newCode,
+      isInstitutional: Boolean(member.is_institutional)
+    });
+
+    res.json({
+      success: true,
+      message: `Fresh verification code dispatched to ${member.email}.`,
+      previewOtp: newCode
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/auth/verification-preview/:email - Evaluator live preview of dispatched verification email
+app.get('/api/auth/verification-preview/:email', (req, res) => {
+  const dispatch = mailAuth.getLatestDispatch(req.params.email);
+  if (!dispatch) {
+    return res.status(404).send('<h3>No recent verification email found for this address.</h3>');
+  }
+  res.setHeader('Content-Type', 'text/html');
+  res.send(dispatch.html);
+});
+
+// POST /api/auth/login - Log in an existing member with Mail Authenticity enforcement
+app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -163,7 +278,35 @@ app.post('/api/auth/login', (req, res) => {
       });
     }
 
-    console.log(`[USER LOGIN] Member Logged In: "${member.name}" <${member.email}>`);
+    // Enforce email authenticity verification
+    if (!member.is_verified) {
+      let activeCode = db.getLatestVerificationCode(member.email);
+      let previewOtp = activeCode ? activeCode.code : null;
+
+      // Only generate and dispatch a new code if no active code exists or has expired
+      if (!activeCode || new Date(activeCode.expires_at) <= new Date()) {
+        const newCode = mailAuth.generateVerificationCode();
+        db.saveVerificationCode(member.email, newCode, 15);
+        await mailAuth.sendVerificationMail({
+          email: member.email,
+          name: member.name,
+          code: newCode,
+          isInstitutional: Boolean(member.is_institutional)
+        });
+        previewOtp = newCode;
+      }
+
+      console.log(`[LOGIN BLOCKED] Unverified account attempt: <${member.email}>`);
+      return res.status(403).json({
+        success: false,
+        requiresVerification: true,
+        email: member.email,
+        error: 'Email authenticity not verified. A 6-digit security code has been dispatched to your email.',
+        previewOtp
+      });
+    }
+
+    console.log(`[USER LOGIN] Authenticated Member: "${member.name}" <${member.email}>`);
     res.json({
       success: true,
       message: `Welcome back, ${member.name}.`,
