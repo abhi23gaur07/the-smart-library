@@ -23,6 +23,40 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname)));
 
 // ==========================================
+// MOTIVATIONAL QUOTES API (DAILY ROTATION)
+// ==========================================
+
+// GET /api/quote-of-the-day - Get today's daily motivational quote (rotates daily)
+app.get(['/api/quote-of-the-day', '/api/quotes/daily'], (req, res) => {
+  try {
+    const quote = db.getDailyQuote();
+    res.json({ success: true, quote });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/quotes - Get all 15 motivational quotes
+app.get('/api/quotes', (req, res) => {
+  try {
+    const quotes = db.getAllQuotes();
+    res.json({ success: true, count: quotes.length, quotes });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/quotes/random - Get a random inspirational quote
+app.get('/api/quotes/random', (req, res) => {
+  try {
+    const quote = db.getRandomQuote();
+    res.json({ success: true, quote });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ==========================================
 // BOOKS API
 // ==========================================
 

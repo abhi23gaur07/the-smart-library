@@ -62,6 +62,14 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS motivational_quotes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    quote TEXT NOT NULL,
+    author TEXT NOT NULL,
+    category TEXT DEFAULT 'Knowledge & Inspiration',
+    day_index INTEGER UNIQUE NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS email_verifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT NOT NULL,
@@ -852,7 +860,169 @@ function getStats() {
   };
 }
 
+
+// ==========================================
+// 15 MOTIVATIONAL QUOTES & DAILY ROTATION
+// ==========================================
+const DEFAULT_15_QUOTES = [
+  {
+    day_index: 1,
+    quote: "Education is the most powerful weapon which you can use to change the world.",
+    author: "Nelson Mandela",
+    category: "Leadership & Education"
+  },
+  {
+    day_index: 2,
+    quote: "Learning gives creativity, creativity leads to thinking, thinking provides knowledge, and knowledge makes you great.",
+    author: "Dr. A.P.J. Abdul Kalam",
+    category: "Youth & Innovation"
+  },
+  {
+    day_index: 3,
+    quote: "Arise, awake, and stop not until the goal is reached.",
+    author: "Swami Vivekananda",
+    category: "Perseverance & Willpower"
+  },
+  {
+    day_index: 4,
+    quote: "The only thing that you absolutely have to know, is the location of the library.",
+    author: "Albert Einstein",
+    category: "Curiosity & Wisdom"
+  },
+  {
+    day_index: 5,
+    quote: "You cannot cross the sea merely by standing and staring at the water.",
+    author: "Rabindranath Tagore",
+    category: "Action & Courage"
+  },
+  {
+    day_index: 6,
+    quote: "A room without books is like a body without a soul.",
+    author: "Marcus Tullius Cicero",
+    category: "Literary Philosophy"
+  },
+  {
+    day_index: 7,
+    quote: "Live as if you were to die tomorrow. Learn as if you were to live forever.",
+    author: "Mahatma Gandhi",
+    category: "Lifelong Learning"
+  },
+  {
+    day_index: 8,
+    quote: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.",
+    author: "Dr. Seuss",
+    category: "Exploration & Growth"
+  },
+  {
+    day_index: 9,
+    quote: "Knowledge is power. Information is liberating. Education is the premise of progress, in every society, in every family.",
+    author: "Kofi Annan",
+    category: "Social Progress"
+  },
+  {
+    day_index: 10,
+    quote: "There is no friend as loyal as a book.",
+    author: "Ernest Hemingway",
+    category: "Companionship & Books"
+  },
+  {
+    day_index: 11,
+    quote: "An investment in knowledge pays the best interest.",
+    author: "Benjamin Franklin",
+    category: "Investment in Self"
+  },
+  {
+    day_index: 12,
+    quote: "A book is a dream that you hold in your hand.",
+    author: "Neil Gaiman",
+    category: "Imagination & Wonder"
+  },
+  {
+    day_index: 13,
+    quote: "Real education should educate us out of self into something far finer; into a manner of life which strikes for excellence.",
+    author: "Dr. Sarvepalli Radhakrishnan",
+    category: "Excellence & Character"
+  },
+  {
+    day_index: 14,
+    quote: "Libraries store the energy that fuels the imagination. They open up windows to the world and inspire us to explore and achieve.",
+    author: "Sidney Sheldon",
+    category: "Libraries & Discovery"
+  },
+  {
+    day_index: 15,
+    quote: "It is not that I'm so smart. But I stay with the questions much longer.",
+    author: "Albert Einstein",
+    category: "Inquiry & Resilience"
+  }
+];
+
+function seedMotivationalQuotes() {
+  try {
+    const countRow = db.prepare('SELECT count(*) as count FROM motivational_quotes').get();
+    if (!countRow || countRow.count < 15) {
+      const stmt = db.prepare(`
+        INSERT INTO motivational_quotes (quote, author, category, day_index)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(day_index) DO UPDATE SET quote = excluded.quote, author = excluded.author, category = excluded.category
+      `);
+      for (const item of DEFAULT_15_QUOTES) {
+        stmt.run(item.quote, item.author, item.category, item.day_index);
+      }
+      console.log('[Database] Seeded 15 Motivational Quotes successfully.');
+    }
+  } catch (err) {
+    console.error('[Database] Failed to seed motivational quotes:', err.message);
+  }
+}
+
+seedMotivationalQuotes();
+
+function getDailyQuote() {
+  const now = new Date();
+  const epochDays = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+  const dayIndex = (epochDays % 15) + 1; // 1 to 15
+
+  const quote = db.prepare('SELECT * FROM motivational_quotes WHERE day_index = ?').get(dayIndex)
+    || db.prepare('SELECT * FROM motivational_quotes ORDER BY id ASC LIMIT 1').get();
+
+  return {
+    ...quote,
+    day_number: dayIndex,
+    total_days: 15,
+    formatted_date: now.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  };
+}
+
+function getAllQuotes() {
+  return db.prepare('SELECT * FROM motivational_quotes ORDER BY day_index ASC').all();
+}
+
+function getRandomQuote() {
+  const quote = db.prepare('SELECT * FROM motivational_quotes ORDER BY RANDOM() LIMIT 1').get();
+  const now = new Date();
+  return {
+    ...quote,
+    day_number: quote ? quote.day_index : 1,
+    total_days: 15,
+    formatted_date: now.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  };
+}
+
 module.exports = {
+  getDailyQuote,
+  getAllQuotes,
+  getRandomQuote,
   db,
   getAllBooks,
   getBookById,
