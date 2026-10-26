@@ -358,15 +358,6 @@
 			z-index: 999999;
 		}
 
-		@media (pointer: fine) {
-			body {
-				cursor: none;
-			}
-			a, button, input, select, textarea, [role="button"], .filter, .book-card, .cover, .tilt-card, .primary-btn, .icon-btn {
-				cursor: none !important;
-			}
-		}
-
 		/* Refined Modern Dimensional Heading & Brand Styling */
 		.heading-3d-wrap {
 			perspective: 1000px;
@@ -391,7 +382,7 @@
 			transform-style: preserve-3d;
 			transform: perspective(900px) rotateX(4deg) translateZ(16px);
 			transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.35s ease;
-			cursor: none;
+			cursor: default;
 			filter: drop-shadow(0 8px 16px rgba(0, 150, 230, 0.22)) drop-shadow(0 2px 4px rgba(21, 42, 53, 0.15));
 		}
 
@@ -1023,35 +1014,57 @@
 		.verified-member-pill { display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.35); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; margin-left: 6px; }
 		.inst-member-pill { display: inline-flex; align-items: center; gap: 4px; background: rgba(14, 165, 233, 0.15); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.35); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; margin-left: 4px; }
 	
-		/* Daily Motivational Quote Styling */
+		/* System Cursor Restored + Subtle Particle Follower */
+		body {
+			cursor: default !important;
+		}
+		a, button, [role="button"], .filter, .book-card, .cover, .tilt-card, .primary-btn, .icon-btn, .action-btn, .quote-cycle-btn, .logout-btn {
+			cursor: pointer !important;
+		}
+		input, textarea {
+			cursor: text !important;
+		}
+		.heading-3d-text {
+			cursor: default !important;
+		}
+
+		/* Top Daily Motivational Inspiration Banner */
 		.daily-quote-section {
-			padding: 24px 0 10px;
+			padding: 20px 0 10px;
 			position: relative;
-			z-index: 5;
+			z-index: 20;
+		}
+		.quote-card::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 3.5px;
+			background: linear-gradient(90deg, #00d2ff 0%, #a855f7 50%, #f59e0b 100%);
 		}
 		.quote-card {
 			position: relative;
-			background: linear-gradient(135deg, rgba(13, 22, 33, 0.85) 0%, rgba(20, 32, 48, 0.7) 100%);
-			border: 1px solid rgba(0, 210, 255, 0.22);
+			background: linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(20, 32, 54, 0.82) 50%, rgba(30, 27, 75, 0.8) 100%);
+			border: 1px solid rgba(0, 210, 255, 0.35);
 			border-radius: 16px;
-			padding: 24px 30px;
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), inset 0 0 25px rgba(0, 210, 255, 0.04);
+			padding: 22px 28px;
+			backdrop-filter: blur(14px);
+			-webkit-backdrop-filter: blur(14px);
+			box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45), 0 0 25px rgba(0, 210, 255, 0.15);
 			overflow: hidden;
-			transition: border-color 0.3s ease, box-shadow 0.3s ease;
+			transition: all 0.3s ease;
 		}
 		.quote-card:hover {
-			border-color: rgba(0, 210, 255, 0.45);
-			box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(0, 210, 255, 0.08);
+			box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55), 0 0 35px rgba(168, 85, 247, 0.25);
 		}
 		.quote-glow-accent {
 			position: absolute;
 			top: -40px;
 			right: -40px;
-			width: 140px;
-			height: 140px;
-			background: radial-gradient(circle, rgba(0, 210, 255, 0.15) 0%, transparent 70%);
+			width: 160px;
+			height: 160px;
+			background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(0, 210, 255, 0.15) 50%, transparent 70%);
 			border-radius: 50%;
 			pointer-events: none;
 		}
@@ -1061,50 +1074,57 @@
 			align-items: center;
 			flex-wrap: wrap;
 			gap: 12px;
-			margin-bottom: 14px;
+			margin-bottom: 12px;
 		}
 		.quote-header-left {
 			display: flex;
 			align-items: center;
-			gap: 10px;
+			gap: 12px;
 			flex-wrap: wrap;
 		}
 		.quote-badge {
 			display: inline-flex;
 			align-items: center;
-			gap: 5px;
-			background: rgba(0, 210, 255, 0.15);
-			color: #00d2ff;
-			border: 1px solid rgba(0, 210, 255, 0.35);
-			padding: 4px 10px;
+			gap: 6px;
+			background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(168, 85, 247, 0.2));
+			color: #00f2fe;
+			border: 1px solid rgba(0, 210, 255, 0.45);
+			padding: 4px 12px;
 			border-radius: 20px;
 			font: 700 11px 'DM Mono', monospace;
-			letter-spacing: 0.8px;
+			letter-spacing: 1px;
 			text-transform: uppercase;
+			box-shadow: 0 0 12px rgba(0, 210, 255, 0.2);
 		}
 		.quote-day-pill {
-			color: #94a3b8;
-			font: 500 12px 'DM Mono', monospace;
+			color: #fbbf24;
+			font: 600 12px 'DM Mono', monospace;
 			letter-spacing: 0.5px;
+			background: rgba(245, 158, 11, 0.12);
+			border: 1px solid rgba(245, 158, 11, 0.3);
+			padding: 3px 10px;
+			border-radius: 12px;
 		}
 		.quote-cycle-btn {
-			background: rgba(255, 255, 255, 0.06);
-			border: 1px solid rgba(255, 255, 255, 0.12);
-			color: #e2e8f0;
-			padding: 6px 14px;
+			background: linear-gradient(135deg, rgba(0, 210, 255, 0.15), rgba(168, 85, 247, 0.2));
+			border: 1px solid rgba(0, 210, 255, 0.4);
+			color: #f8fafc;
+			padding: 6px 16px;
 			border-radius: 20px;
-			font: 600 12px inherit;
+			font: 700 12px inherit;
 			cursor: pointer;
 			display: inline-flex;
 			align-items: center;
-			gap: 6px;
-			transition: all 0.2s ease;
+			gap: 8px;
+			transition: all 0.25s ease;
+			box-shadow: 0 0 15px rgba(0, 210, 255, 0.15);
 		}
 		.quote-cycle-btn:hover {
-			background: rgba(0, 210, 255, 0.2);
-			border-color: #00d2ff;
-			color: #00d2ff;
-			transform: translateY(-1px);
+			background: linear-gradient(135deg, #00d2ff, #a855f7);
+			color: #ffffff;
+			border-color: #ffffff;
+			transform: translateY(-2px);
+			box-shadow: 0 0 25px rgba(0, 210, 255, 0.4);
 		}
 		.quote-content-wrap {
 			position: relative;
@@ -1112,11 +1132,13 @@
 		}
 		.quote-glyph {
 			position: absolute;
-			top: -14px;
+			top: -16px;
 			left: 0;
-			font-size: 3.5rem;
+			font-size: 3.6rem;
 			line-height: 1;
-			color: rgba(0, 210, 255, 0.3);
+			background: linear-gradient(135deg, #00f2fe, #a855f7);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
 			font-family: 'Georgia', serif;
 			user-select: none;
 		}
@@ -1125,9 +1147,9 @@
 			font-size: 1.25rem;
 			font-style: italic;
 			line-height: 1.55;
-			color: #f8fafc;
+			color: #ffffff;
 			margin: 0 0 12px;
-			text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+			text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 		}
 		.quote-author-line {
 			display: flex;
@@ -1135,39 +1157,41 @@
 			align-items: center;
 			flex-wrap: wrap;
 			gap: 10px;
-			padding-top: 6px;
-			border-top: 1px solid rgba(255, 255, 255, 0.08);
+			padding-top: 8px;
+			border-top: 1px solid rgba(255, 255, 255, 0.1);
 		}
 		.quote-author-info {
 			display: flex;
 			align-items: center;
-			gap: 8px;
+			gap: 10px;
 			flex-wrap: wrap;
 		}
 		.quote-author-name {
-			color: #00d2ff;
-			font-size: 0.95rem;
+			color: #38bdf8;
+			font-size: 1rem;
 			font-weight: 700;
-			letter-spacing: 0.4px;
+			letter-spacing: 0.5px;
+			text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
 		}
 		.quote-dot {
-			color: #475569;
+			color: #64748b;
 		}
 		.quote-category-tag {
-			color: #ffaa40;
-			font: 500 11px 'DM Mono', monospace;
-			background: rgba(255, 170, 64, 0.1);
-			padding: 2px 8px;
-			border-radius: 6px;
+			color: #f43f5e;
+			font: 600 11px 'DM Mono', monospace;
+			background: rgba(244, 63, 94, 0.15);
+			border: 1px solid rgba(244, 63, 94, 0.35);
+			padding: 2px 10px;
+			border-radius: 10px;
 		}
 		.quote-live-clock {
-			color: #64748b;
+			color: #94a3b8;
 			font: 400 11px 'DM Mono', monospace;
 		}
 		@media (max-width: 768px) {
-			.quote-card { padding: 18px 20px; }
+			.quote-card { padding: 16px 18px; }
 			.quote-main-text { font-size: 1.1rem; }
-			.quote-content-wrap { padding-left: 28px; }
+			.quote-content-wrap { padding-left: 26px; }
 			.quote-glyph { font-size: 2.8rem; top: -10px; }
 		}
 
@@ -1289,6 +1313,41 @@
 	</header>
 
 	<main id="top">
+
+		<!-- Top Daily Motivational Inspiration Banner -->
+		<section class="daily-quote-section" id="daily-quote-section">
+			<div class="wrap">
+				<div class="quote-card tilt-card">
+					<div class="quote-glow-accent"></div>
+					<div class="quote-card-header">
+						<div class="quote-header-left">
+							<span class="quote-badge">✨ TODAY'S INSPIRATION</span>
+							<span class="quote-day-pill" id="quote-day-pill">Day 8 of 15 · Monday, October 26, 2026</span>
+						</div>
+						<div class="quote-header-right">
+							<button id="btn-next-quote" class="quote-cycle-btn" type="button" title="Inspire Me with Another Quote">
+								<span>Inspire Me</span> 🔀
+							</button>
+						</div>
+					</div>
+					<div class="quote-content-wrap">
+						<span class="quote-glyph">“</span>
+						<blockquote class="quote-main-text" id="quote-main-text">
+							The more that you read, the more things you will know. The more that you learn, the more places you'll go.
+						</blockquote>
+						<div class="quote-author-line">
+							<div class="quote-author-info">
+								<strong class="quote-author-name" id="quote-author-name">Dr. Seuss</strong>
+								<span class="quote-dot">·</span>
+								<span class="quote-category-tag" id="quote-category-tag">Exploration &amp; Growth</span>
+							</div>
+							<div class="quote-live-clock" id="quote-rotation-note">⏱️ Auto-rotates daily at midnight</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
 		<section class="hero">
 			<div class="wrap hero-grid">
 				<div class="hero-copy">
@@ -1365,41 +1424,6 @@
 				<div class="status"><i></i> Open today: Circulation 8:00 AM – 8:00 PM · Digital 24/7</div>
 				<p><strong>Mon–Fri:</strong> 8am–8pm &nbsp;·&nbsp; <strong>Sat–Sun:</strong> 10am–6pm &nbsp;·&nbsp; <strong>Exams:</strong> Extended to 11pm</p>
 				<a href="#rru-administration" class="text-link">Campus details &amp; Location ↗</a>
-			</div>
-		</section>
-
-		
-		<!-- Daily Motivational Inspiration Strip -->
-		<section class="daily-quote-section" id="daily-quote-section">
-			<div class="wrap">
-				<div class="quote-card tilt-card">
-					<div class="quote-glow-accent"></div>
-					<div class="quote-card-header">
-						<div class="quote-header-left">
-							<span class="quote-badge">✨ DAILY INSPIRATION</span>
-							<span class="quote-day-pill" id="quote-day-pill">Day 8 of 15 · Monday, October 26, 2026</span>
-						</div>
-						<div class="quote-header-right">
-							<button id="btn-next-quote" class="quote-cycle-btn" type="button" title="View Another Quote">
-								<span>Inspire Me</span> 🔀
-							</button>
-						</div>
-					</div>
-					<div class="quote-content-wrap">
-						<span class="quote-glyph">“</span>
-						<blockquote class="quote-main-text" id="quote-main-text">
-							The more that you read, the more things you will know. The more that you learn, the more places you'll go.
-						</blockquote>
-						<div class="quote-author-line">
-							<div class="quote-author-info">
-								<strong class="quote-author-name" id="quote-author-name">Dr. Seuss</strong>
-								<span class="quote-dot">·</span>
-								<span class="quote-category-tag" id="quote-category-tag">Exploration &amp; Growth</span>
-							</div>
-							<div class="quote-live-clock" id="quote-rotation-note">⏱️ Auto-rotates daily at midnight</div>
-						</div>
-					</div>
-				</div>
 			</div>
 		</section>
 
@@ -2127,10 +2151,642 @@
 			}
 		});
 
-		
+		// ==========================================
+		// MAIL AUTHENTICITY & VERIFICATION CLIENT
+		// ==========================================
+		let pendingVerifyEmail = '';
+		let resendTimer = null;
+		let resendSecondsLeft = 0;
+
+		const emailVerifyView = document.getElementById('email-verify-view');
+		const verifyTargetEmail = document.getElementById('verify-target-email');
+		const verifyInstTag = document.getElementById('verify-inst-tag');
+		const verifyStdTag = document.getElementById('verify-std-tag');
+		const demoOtpBanner = document.getElementById('demo-otp-banner');
+		const demoOtpCode = document.getElementById('demo-otp-code');
+		const verifyOtpInput = document.getElementById('verify-otp-input');
+		const verifySubmitBtn = document.getElementById('verify-submit-btn');
+		const verifyBtnLabel = document.getElementById('verify-btn-label');
+		const verifyStatusMsg = document.getElementById('verify-status-msg');
+		const verifyResendBtn = document.getElementById('verify-resend-btn');
+		const resendCountdown = document.getElementById('resend-countdown');
+		const verifyPreviewMailBtn = document.getElementById('verify-preview-mail-btn');
+		const verifyBackBtn = document.getElementById('verify-back-btn');
+		const loginFormEl = document.getElementById('login-form');
+		const portalTabsEl = document.querySelector('.portal-tabs');
+		const portalNoteEl = document.getElementById('portal-note');
+
+		function setVerifyStatus(msg, isSuccess = false) {
+			if (!verifyStatusMsg) return;
+			verifyStatusMsg.textContent = msg;
+			verifyStatusMsg.classList.toggle('success', isSuccess);
+		}
+
+		function showEmailVerificationView(email, previewOtp = null, isInstitutional = false) {
+			pendingVerifyEmail = email.toLowerCase().trim();
+			if (loginFormEl) loginFormEl.hidden = true;
+			if (portalTabsEl) portalTabsEl.style.display = 'none';
+			if (portalNoteEl) portalNoteEl.style.display = 'none';
+			if (emailVerifyView) emailVerifyView.hidden = false;
+
+			if (verifyTargetEmail) verifyTargetEmail.textContent = pendingVerifyEmail;
+			if (verifyInstTag) verifyInstTag.hidden = !isInstitutional;
+			if (verifyStdTag) verifyStdTag.hidden = Boolean(isInstitutional);
+
+			if (demoOtpBanner && previewOtp) {
+				demoOtpBanner.style.display = 'block';
+				demoOtpCode.textContent = previewOtp;
+				demoOtpBanner.onclick = () => {
+					verifyOtpInput.value = previewOtp;
+					verifyOtpInput.focus();
+					setVerifyStatus('Demo code auto-filled! Click Verify.', true);
+				};
+			} else if (demoOtpBanner) {
+				demoOtpBanner.style.display = 'none';
+			}
+
+			if (verifyOtpInput) {
+				verifyOtpInput.value = '';
+				setTimeout(() => verifyOtpInput.focus(), 150);
+			}
+
+			startResendCountdown(30);
+			setVerifyStatus('Please enter the 6-digit code dispatched to your email.');
+		}
+
+		function hideEmailVerificationView() {
+			if (emailVerifyView) emailVerifyView.hidden = true;
+			if (loginFormEl) loginFormEl.hidden = false;
+			if (portalTabsEl) portalTabsEl.style.display = 'flex';
+			if (portalNoteEl) portalNoteEl.style.display = 'block';
+			if (resendTimer) clearInterval(resendTimer);
+			setPortalStatus('');
+		}
+
+		function startResendCountdown(seconds = 30) {
+			resendSecondsLeft = seconds;
+			if (resendTimer) clearInterval(resendTimer);
+			if (verifyResendBtn) {
+				verifyResendBtn.disabled = true;
+				verifyResendBtn.style.opacity = '0.5';
+				verifyResendBtn.style.cursor = 'not-allowed';
+			}
+			if (resendCountdown) resendCountdown.textContent = `(${resendSecondsLeft}s)`;
+
+			resendTimer = setInterval(() => {
+				resendSecondsLeft--;
+				if (resendSecondsLeft <= 0) {
+					clearInterval(resendTimer);
+					if (verifyResendBtn) {
+						verifyResendBtn.disabled = false;
+						verifyResendBtn.style.opacity = '1';
+						verifyResendBtn.style.cursor = 'pointer';
+					}
+					if (resendCountdown) resendCountdown.textContent = '';
+				} else {
+					if (resendCountdown) resendCountdown.textContent = `(${resendSecondsLeft}s)`;
+				}
+			}, 1000);
+		}
+
+		if (verifyBackBtn) {
+			verifyBackBtn.addEventListener('click', hideEmailVerificationView);
+		}
+
+		if (verifyResendBtn) {
+			verifyResendBtn.addEventListener('click', async () => {
+				if (resendSecondsLeft > 0 || !pendingVerifyEmail) return;
+				setVerifyStatus('Requesting a fresh verification code...');
+				try {
+					const res = await fetch('/api/auth/resend-code', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ email: pendingVerifyEmail })
+					});
+					const data = await res.json();
+					if (res.ok) {
+						setVerifyStatus(data.message || 'Fresh code dispatched.', true);
+						if (data.previewOtp && demoOtpBanner) {
+							demoOtpBanner.style.display = 'block';
+							demoOtpCode.textContent = data.previewOtp;
+							demoOtpBanner.onclick = () => {
+								verifyOtpInput.value = data.previewOtp;
+								verifyOtpInput.focus();
+							};
+						}
+						startResendCountdown(30);
+					} else {
+						setVerifyStatus(data.error || 'Failed to resend code.');
+					}
+				} catch (err) {
+					setVerifyStatus('Network error requesting fresh code.');
+				}
+			});
+		}
+
+		if (verifyPreviewMailBtn) {
+			verifyPreviewMailBtn.addEventListener('click', () => {
+				if (!pendingVerifyEmail) return;
+				const previewUrl = `/api/auth/verification-preview/${encodeURIComponent(pendingVerifyEmail)}`;
+				window.open(previewUrl, 'mailPreviewWindow', 'width=620,height=680,scrollbars=yes');
+			});
+		}
+
+		if (verifySubmitBtn) {
+			verifySubmitBtn.addEventListener('click', async () => {
+				const code = verifyOtpInput.value.trim();
+				if (!code || code.length !== 6) {
+					setVerifyStatus('Please enter a valid 6-digit code.');
+					verifyOtpInput.focus();
+					return;
+				}
+
+				verifyBtnLabel.textContent = 'Verifying Authenticity...';
+				verifySubmitBtn.disabled = true;
+
+				try {
+					const res = await fetch('/api/auth/verify-email', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ email: pendingVerifyEmail, code })
+					});
+					const data = await res.json();
+					if (!res.ok) {
+						setVerifyStatus(data.error || 'Verification failed. Code may be invalid or expired.');
+						verifyBtnLabel.textContent = 'Verify & Activate Account';
+						verifySubmitBtn.disabled = false;
+						return;
+					}
+
+					setVerifyStatus('✅ Email authenticity verified! Activating...', true);
+					currentMember = data.member;
+					sessionStorage.setItem('smart-library-session', JSON.stringify(currentMember));
+
+					setTimeout(() => {
+						hideEmailVerificationView();
+						openLibrary();
+					}, 700);
+				} catch (err) {
+					setVerifyStatus('Network error during verification.');
+					verifyBtnLabel.textContent = 'Verify & Activate Account';
+					verifySubmitBtn.disabled = false;
+				}
+			});
+		}
+
+		filters.forEach(filter => filter.addEventListener('click', () => {
+			filters.forEach(item => item.classList.remove('active'));
+			filter.classList.add('active');
+			activeFilter = filter.dataset.filter;
+			renderCatalogGrid();
+		}));
+
+		search.addEventListener('input', renderCatalogGrid);
+		document.querySelector('#search-focus').addEventListener('click', () => {
+			document.querySelector('#catalog').scrollIntoView({ behavior: 'smooth' });
+			setTimeout(() => search.focus(), 450);
+		});
+
+		// Reservations Dialog & Submission
+		closeDialogBtn.addEventListener('click', () => reserveDialog.close());
+		reserveDialog.addEventListener('click', event => { if (event.target === reserveDialog) reserveDialog.close(); });
+
+		reserveForm.addEventListener('submit', async event => {
+			event.preventDefault();
+			const member_name = reserveNameInput.value.trim();
+			const member_email = reserveEmailInput.value.trim();
+
+			try {
+				const res = await fetch('/api/reservations', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ book_id: selectedBookId, member_name, member_email })
+				});
+				const data = await res.json();
+				if (!res.ok) {
+					showToast(data.error || 'Failed to complete reservation.');
+					return;
+				}
+				reserveDialog.close();
+				reserveForm.reset();
+				showToast(`✓ Reserved "${data.reservation.book_title}"! Hold active for 2 days.`);
+			} catch (err) {
+				reserveDialog.close();
+				showToast(`Reserved "${selectedBook.textContent}".`);
+			}
+		});
+
+		// Add Book Dialog & Submission
+		openAddBookBtn.addEventListener('click', () => addBookDialog.showModal());
+		closeAddDialogBtn.addEventListener('click', () => addBookDialog.close());
+		addBookDialog.addEventListener('click', event => { if (event.target === addBookDialog) addBookDialog.close(); });
+
+		addBookForm.addEventListener('submit', async event => {
+			event.preventDefault();
+			const title = document.querySelector('#new-book-title').value.trim();
+			const author = document.querySelector('#new-book-author').value.trim();
+			const category = document.querySelector('#new-book-category').value;
+			const year = document.querySelector('#new-book-year').value;
+			const color = document.querySelector('#new-book-color').value;
+			const tag = document.querySelector('#new-book-tag').value.trim() || 'New arrival';
+
+			try {
+				const res = await fetch('/api/books', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ title, author, category, year, color, tag })
+				});
+				const data = await res.json();
+				if (!res.ok) {
+					showToast(data.error || 'Could not save book.');
+					return;
+				}
+				addBookDialog.close();
+				addBookForm.reset();
+				showToast(`✓ Added "${title}" to library catalog!`);
+				await refreshCatalog();
+			} catch (err) {
+				showToast('Failed to connect to server.');
+			}
+		});
+
+		// My Reservations View & Management
+		openReservationsBtn.addEventListener('click', async () => {
+			reservationsDialog.showModal();
+			reservationsList.innerHTML = '<p style="color: var(--ink-soft); font-size: 13px;">Loading reservations...</p>';
+			const email = currentMember ? currentMember.email : '';
+			try {
+				const res = await fetch(email ? `/api/reservations?email=${encodeURIComponent(email)}` : '/api/reservations');
+				const data = await res.json();
+				if (!res.ok || !data.reservations || data.reservations.length === 0) {
+					reservationsList.innerHTML = '<p style="color: var(--ink-soft); font-size: 13px; text-align: center; padding: 20px;">No active reservations found. Click "Reserve title" on any book in the collection.</p>';
+					return;
+				}
+
+				reservationsList.innerHTML = data.reservations.map(r => `
+					<div class="res-item" id="res-item-${r.id}">
+						<div class="res-info">
+							<h4>${escapeHtml(r.book_title)}</h4>
+							<p>Reserved by: ${escapeHtml(r.member_name)} · Hold expires: ${new Date(r.expires_at).toLocaleDateString()}</p>
+						</div>
+						<button class="cancel-res-btn" data-id="${r.id}">Cancel</button>
+					</div>
+				`).join('');
+
+				reservationsList.querySelectorAll('.cancel-res-btn').forEach(btn => {
+					btn.addEventListener('click', async () => {
+						const resId = btn.dataset.id;
+						try {
+							const delRes = await fetch(`/api/reservations/${resId}`, { method: 'DELETE' });
+							if (delRes.ok) {
+								document.querySelector(`#res-item-${resId}`)?.remove();
+								showToast('Reservation cancelled.');
+								if (reservationsList.children.length === 0) {
+									reservationsList.innerHTML = '<p style="color: var(--ink-soft); font-size: 13px; text-align: center; padding: 20px;">No active reservations found.</p>';
+								}
+							}
+						} catch {
+							showToast('Error cancelling reservation.');
+						}
+					});
+				});
+			} catch (err) {
+				reservationsList.innerHTML = '<p style="color: var(--coral-deep); font-size: 13px;">Error loading reservations.</p>';
+			}
+		});
+
+		closeReservationsDialogBtn.addEventListener('click', () => reservationsDialog.close());
+		reservationsDialog.addEventListener('click', event => { if (event.target === reservationsDialog) reservationsDialog.close(); });
+
+		// Newsletter Subscription
+		newsletterBtn.addEventListener('click', () => {
+			if (currentMember && currentMember.email) {
+				subEmailInput.value = currentMember.email;
+			}
+			newsletterDialog.showModal();
+		});
+
+		closeNewsletterBtn.addEventListener('click', () => newsletterDialog.close());
+		newsletterDialog.addEventListener('click', event => { if (event.target === newsletterDialog) newsletterDialog.close(); });
+
+		newsletterForm.addEventListener('submit', async event => {
+			event.preventDefault();
+			const email = subEmailInput.value.trim();
+			try {
+				const res = await fetch('/api/newsletter', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email })
+				});
+				const data = await res.json();
+				newsletterDialog.close();
+				newsletterForm.reset();
+				showToast(data.message || 'Subscribed to reading list!');
+			} catch {
+				newsletterDialog.close();
+				showToast('Subscribed to reading list!');
+			}
+		});
+
+		// Mobile navigation
+		document.querySelector('#menu-toggle').addEventListener('click', event => {
+			const nav = document.querySelector('#main-nav');
+			const open = nav.classList.toggle('open');
+			event.currentTarget.setAttribute('aria-expanded', open);
+			event.currentTarget.textContent = open ? '×' : '☰';
+		});
+		document.querySelectorAll('#main-nav a').forEach(link => link.addEventListener('click', () => document.querySelector('#main-nav').classList.remove('open')));
+
+		// Check existing session on load
+		const savedSession = sessionStorage.getItem('smart-library-session');
+		if (savedSession) {
+			try {
+				currentMember = JSON.parse(savedSession);
+				openLibrary();
+			} catch {
+				sessionStorage.removeItem('smart-library-session');
+			}
+		}
+
+		// ==========================================
+		// BEAUTIFUL ELECTRIC BLUE CURSOR & TRAILING LINES
+		// ==========================================
+		const cursorCanvas = document.getElementById('cursor-canvas');
+		const cursorCtx = cursorCanvas.getContext('2d');
+
+		let canvasW = (cursorCanvas.width = window.innerWidth);
+		let canvasH = (cursorCanvas.height = window.innerHeight);
+
+		window.addEventListener('resize', () => {
+			canvasW = cursorCanvas.width = window.innerWidth;
+			canvasH = cursorCanvas.height = window.innerHeight;
+		});
+
+		const pointer = {
+			x: window.innerWidth / 2,
+			y: window.innerHeight / 2,
+			targetX: window.innerWidth / 2,
+			targetY: window.innerHeight / 2,
+			isHover: false,
+			isClick: false,
+			visible: false
+		};
+
+		const trailPoints = [];
+		const MAX_TRAIL = 26;
+		const particles = [];
+
+		window.addEventListener('mousemove', e => {
+			pointer.targetX = e.clientX;
+			pointer.targetY = e.clientY;
+			pointer.visible = true;
+		});
+
+		window.addEventListener('mousedown', () => { pointer.isClick = true; });
+		window.addEventListener('mouseup', () => { pointer.isClick = false; });
+		document.addEventListener('mouseleave', () => { pointer.visible = false; });
+		document.addEventListener('mouseenter', () => { pointer.visible = true; });
+
+		document.addEventListener('mouseover', e => {
+			if (e.target.closest('a, button, input, select, textarea, [role="button"], .filter, .book-card, .tilt-card, .cover')) {
+				pointer.isHover = true;
+			}
+		});
+
+		document.addEventListener('mouseout', e => {
+			if (e.target.closest('a, button, input, select, textarea, [role="button"], .filter, .book-card, .tilt-card, .cover')) {
+				pointer.isHover = false;
+			}
+		});
+
+		// Dynamic 3D Heading mouse tilt response
+		const heading3DElements = document.querySelectorAll('.heading-3d-text');
+		window.addEventListener('mousemove', e => {
+			heading3DElements.forEach(el => {
+				const rect = el.getBoundingClientRect();
+				if (rect.top < window.innerHeight && rect.bottom > 0) {
+					const centerX = rect.left + rect.width / 2;
+					const centerY = rect.top + rect.height / 2;
+					const offsetX = (e.clientX - centerX) / (window.innerWidth / 2);
+					const offsetY = (e.clientY - centerY) / (window.innerHeight / 2);
+					const rotX = -offsetY * 14;
+					const rotY = offsetX * 16;
+					el.style.transform = `perspective(800px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) translateZ(28px)`;
+				}
+			});
+		});
+
+		window.addEventListener('mouseleave', () => {
+			heading3DElements.forEach(el => {
+				el.style.transform = 'perspective(800px) rotateX(10deg) rotateY(-5deg) translateZ(24px)';
+			});
+		});
+
+		class TrailSparkle {
+			constructor(x, y) {
+				this.x = x;
+				this.y = y;
+				this.vx = (Math.random() - 0.5) * 1.6;
+				this.vy = (Math.random() - 0.5) * 1.6;
+				this.size = Math.random() * 2.2 + 0.8;
+				this.life = 0;
+				this.maxLife = Math.random() * 20 + 15;
+			}
+			update() {
+				this.x += this.vx;
+				this.y += this.vy;
+				this.life++;
+			}
+			draw(ctx) {
+				const alpha = Math.max(0, 1 - this.life / this.maxLife);
+				ctx.save();
+				ctx.globalAlpha = alpha * 0.8;
+				ctx.shadowColor = '#00e5ff';
+				ctx.shadowBlur = 10;
+				ctx.fillStyle = '#00d2ff';
+				ctx.beginPath();
+				ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.restore();
+			}
+		}
+
+		function animateCursor() {
+			cursorCtx.clearRect(0, 0, canvasW, canvasH);
+
+			if (pointer.visible) {
+				// Smooth easing towards target
+				pointer.x += (pointer.targetX - pointer.x) * 0.42;
+				pointer.y += (pointer.targetY - pointer.y) * 0.42;
+
+				trailPoints.unshift({ x: pointer.x, y: pointer.y });
+				if (trailPoints.length > MAX_TRAIL) trailPoints.pop();
+
+				const dist = Math.hypot(pointer.targetX - pointer.x, pointer.targetY - pointer.y);
+				if (dist > 1.2 && Math.random() < 0.35) {
+					particles.push(new TrailSparkle(pointer.x, pointer.y));
+				}
+			} else if (trailPoints.length > 0) {
+				trailPoints.pop();
+			}
+
+			// Render trailing sparkles
+			for (let i = particles.length - 1; i >= 0; i--) {
+				particles[i].update();
+				particles[i].draw(cursorCtx);
+				if (particles[i].life >= particles[i].maxLife) {
+					particles.splice(i, 1);
+				}
+			}
+
+			// Render trailing electric blue ribbon lines
+			if (trailPoints.length > 2) {
+				cursorCtx.save();
+				cursorCtx.lineCap = 'round';
+				cursorCtx.lineJoin = 'round';
+
+				// Layer 1: Outer ethereal blue glow
+				cursorCtx.shadowColor = '#00aaff';
+				cursorCtx.shadowBlur = 16;
+				for (let i = 0; i < trailPoints.length - 1; i++) {
+					const p1 = trailPoints[i];
+					const p2 = trailPoints[i + 1];
+					const progress = 1 - (i / trailPoints.length);
+
+					cursorCtx.beginPath();
+					cursorCtx.moveTo(p1.x, p1.y);
+					cursorCtx.lineTo(p2.x, p2.y);
+					cursorCtx.strokeStyle = `rgba(0, 195, 255, ${progress * 0.65})`;
+					cursorCtx.lineWidth = Math.max(0.6, progress * (pointer.isHover ? 6 : 4.5));
+					cursorCtx.stroke();
+				}
+
+				// Layer 2: Core luminous azure/cyan highlight line
+				cursorCtx.shadowColor = '#00f2fe';
+				cursorCtx.shadowBlur = 8;
+				for (let i = 0; i < trailPoints.length - 1; i++) {
+					const p1 = trailPoints[i];
+					const p2 = trailPoints[i + 1];
+					const progress = 1 - (i / trailPoints.length);
+
+					cursorCtx.beginPath();
+					cursorCtx.moveTo(p1.x, p1.y);
+					cursorCtx.lineTo(p2.x, p2.y);
+					cursorCtx.strokeStyle = `rgba(230, 250, 255, ${progress * 0.9})`;
+					cursorCtx.lineWidth = Math.max(0.3, progress * (pointer.isHover ? 2.8 : 2));
+					cursorCtx.stroke();
+				}
+				cursorCtx.restore();
+			}
+
+			// Render Glowing Electric Blue Cursor Pointer
+			if (pointer.visible) {
+				cursorCtx.save();
+				const ringRad = pointer.isClick ? 9 : (pointer.isHover ? 22 : 14);
+				const coreRad = pointer.isClick ? 3 : (pointer.isHover ? 5 : 4);
+
+				// Outer halo ring
+				cursorCtx.shadowColor = '#00d2ff';
+				cursorCtx.shadowBlur = 18;
+				cursorCtx.beginPath();
+				cursorCtx.arc(pointer.x, pointer.y, ringRad, 0, Math.PI * 2);
+				cursorCtx.strokeStyle = pointer.isHover ? 'rgba(0, 240, 255, 0.95)' : 'rgba(0, 185, 255, 0.7)';
+				cursorCtx.lineWidth = pointer.isHover ? 2.2 : 1.6;
+				cursorCtx.stroke();
+
+				// Soft interactive disc fill
+				if (pointer.isHover) {
+					cursorCtx.fillStyle = 'rgba(0, 210, 255, 0.18)';
+					cursorCtx.fill();
+				}
+
+				// Intense cyan-blue radial core dot
+				cursorCtx.shadowColor = '#00ffff';
+				cursorCtx.shadowBlur = 12;
+				cursorCtx.beginPath();
+				cursorCtx.arc(pointer.x, pointer.y, coreRad, 0, Math.PI * 2);
+				const radGrad = cursorCtx.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, coreRad);
+				radGrad.addColorStop(0, '#ffffff');
+				radGrad.addColorStop(0.4, '#7de5ff');
+				radGrad.addColorStop(1, '#0084ff');
+				cursorCtx.fillStyle = radGrad;
+				cursorCtx.fill();
+
+				cursorCtx.restore();
+			}
+
+			requestAnimationFrame(animateCursor);
+		}
+		requestAnimationFrame(animateCursor);
 
 		// Initial load of books and RRU metrics
 		
+		// ==========================================
+		// DAILY MOTIVATIONAL QUOTE CONTROLLER
+		// ==========================================
+		const quoteDayPill = document.getElementById('quote-day-pill');
+		const quoteMainText = document.getElementById('quote-main-text');
+		const quoteAuthorName = document.getElementById('quote-author-name');
+		const quoteCategoryTag = document.getElementById('quote-category-tag');
+		const btnNextQuote = document.getElementById('btn-next-quote');
+
+		async function fetchDailyQuote() {
+			try {
+				const res = await fetch('/api/quote-of-the-day');
+				if (res.ok) {
+					const data = await res.json();
+					renderQuote(data.quote);
+				}
+			} catch (err) {
+				console.warn('Could not fetch daily quote:', err);
+			}
+		}
+
+		async function fetchRandomQuote() {
+			try {
+				if (btnNextQuote) {
+					btnNextQuote.disabled = true;
+					btnNextQuote.style.opacity = '0.6';
+				}
+				const res = await fetch('/api/quotes/random');
+				if (res.ok) {
+					const data = await res.json();
+					renderQuote(data.quote, true);
+				}
+			} catch (err) {
+				console.warn('Could not fetch random quote:', err);
+			} finally {
+				if (btnNextQuote) {
+					btnNextQuote.disabled = false;
+					btnNextQuote.style.opacity = '1';
+				}
+			}
+		}
+
+		function renderQuote(q, isRandom = false) {
+			if (!q) return;
+			if (quoteMainText) {
+				quoteMainText.style.opacity = '0';
+				setTimeout(() => {
+					quoteMainText.textContent = q.quote;
+					quoteMainText.style.transition = 'opacity 0.3s ease';
+					quoteMainText.style.opacity = '1';
+				}, 150);
+			}
+			if (quoteAuthorName) quoteAuthorName.textContent = q.author || 'Wise Reader';
+			if (quoteCategoryTag) quoteCategoryTag.textContent = q.category || 'Knowledge & Inspiration';
+			if (quoteDayPill) {
+				const dayLabel = isRandom ? `Quote #${q.day_index || q.day_number} of ${q.total_days || 15}` : `Day ${q.day_number || q.day_index} of 15`;
+				quoteDayPill.textContent = `${dayLabel} · ${q.formatted_date || 'Today'}`;
+			}
+		}
+
+		if (btnNextQuote) {
+			btnNextQuote.addEventListener('click', fetchRandomQuote);
+		}
+
+		fetchDailyQuote();
+
 
 		refreshCatalog();
 		fetchRRUInfo();
