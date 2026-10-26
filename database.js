@@ -1,14 +1,39 @@
 const { DatabaseSync } = require('node:sqlite');
 const fs = require('node:fs');
 const path = require('node:path');
+const os = require('node:os');
 const crypto = require('node:crypto');
 
-const DB_PATH = path.join(__dirname, 'library.db');
-const db = new DatabaseSync(DB_PATH);
+// Detect Vercel / serverless environment (filesystem is read-only except /tmp)
+const isServerless = process.env.VERCEL === '1' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
+let DB_PATH = path.join(__dirname, 'library.db');
 
-// Enable WAL mode for high performance and durability
-db.exec('PRAGMA journal_mode = WAL;');
-db.exec('PRAGMA foreign_keys = ON;');
+if (isServerless) {
+  const tmpDbPath = path.join(os.tmpdir(), 'library.db');
+  try {
+    if (!fs.existsSync(tmpDbPath) && fs.existsSync(DB_PATH)) {
+      fs.copyFileSync(DB_PATH, tmpDbPath);
+    }
+    DB_PATH = tmpDbPath;
+  } catch (err) {
+    console.error('[Database] Notice copying to /tmp:', err.message);
+  }
+}
+
+let db;
+try {
+  db = new DatabaseSync(DB_PATH);
+  try {
+    db.exec('PRAGMA journal_mode = WAL;');
+    db.exec('PRAGMA foreign_keys = ON;');
+  } catch (pragmaErr) {
+    console.warn('[Database] PRAGMA config notice:', pragmaErr.message);
+  }
+} catch (dbErr) {
+  console.error('[Database] Failed to open database at', DB_PATH, dbErr.message);
+  console.log('[Database] Falling back to in-memory database');
+  db = new DatabaseSync(':memory:');
+}
 
 // Initialize tables
 db.exec(`

@@ -562,27 +562,32 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'library.html'));
 });
 
-// Start Server listening on 0.0.0.0
-app.listen(PORT, '0.0.0.0', () => {
-  const nets = os.networkInterfaces();
-  const localIps = [];
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name]) {
-      if (net.family === 'IPv4' && !net.internal) {
-        localIps.push(net.address);
+// Start Server listening on 0.0.0.0 (when running locally or on non-serverless hosts)
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    const nets = os.networkInterfaces();
+    const localIps = [];
+    for (const name of Object.keys(nets)) {
+      for (const net of nets[name]) {
+        if (net.family === 'IPv4' && !net.internal) {
+          localIps.push(net.address);
+        }
       }
     }
-  }
 
-  console.log(`====================================================`);
-  console.log(`🚀 THE SMART LIBRARY is LIVE & COLLECTING DATA!`);
-  console.log(`📍 Local access:    http://localhost:${PORT}`);
-  localIps.forEach(ip => {
-    console.log(`🌐 Network access:  http://${ip}:${PORT}`);
+    console.log(`====================================================`);
+    console.log(`🚀 THE SMART LIBRARY is LIVE & COLLECTING DATA!`);
+    console.log(`📍 Local access:    http://localhost:${PORT}`);
+    localIps.forEach(ip => {
+      console.log(`🌐 Network access:  http://${ip}:${PORT}`);
+    });
+    console.log(`📂 Database:        library.db (SQLite with WAL mode)`);
+    console.log(`📚 Catalog API:     http://localhost:${PORT}/api/books`);
+    console.log(`📊 Statistics API:  http://localhost:${PORT}/api/stats`);
+    console.log(`====================================================`);
   });
-  console.log(`📂 Database:        library.db (SQLite with WAL mode)`);
-  console.log(`📚 Catalog API:     http://localhost:${PORT}/api/books`);
-  console.log(`📊 Statistics API:  http://localhost:${PORT}/api/stats`);
-  console.log(`====================================================`);
-});
+}
+
+// Export Express app for Vercel Serverless Functions
+module.exports = app;
 
